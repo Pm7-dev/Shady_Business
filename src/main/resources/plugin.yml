@@ -1,0 +1,8 @@
+name: Shady Business
+version: '${project.version}'
+main: me.pm7.shady_business.ShadyBusiness
+api-version: '1.21'
+commands:
+  start:
+    description: "uwu~"
+    usage: /<command>
