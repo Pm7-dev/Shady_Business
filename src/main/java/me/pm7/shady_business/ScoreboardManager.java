@@ -25,13 +25,15 @@ public class ScoreboardManager implements Listener {
     static Team gray = board.registerNewTeam("5 Gray");
 
     public static void UpdatePlayerScore(Nerd nerd) {
-        if(nerd == null) { return; }
-        Player p = nerd.getPlayer();
+        if(nerd == null) { System.out.println("nerd was null, cannot give them a name color :("); return; }
+        Player p = Bukkit.getPlayer(nerd.getUuid());
         if(!config.getBoolean("started") || p == null) { return; }
+
 
         p.setScoreboard(board);
 
         if(green != board.getTeam("1 Dark Green")) { //erm, what the scallop
+
             dark_green = board.getTeam("1 Dark Green");
             green = board.getTeam("2 Green");
             yellow = board.getTeam("3 Yellow");
@@ -93,7 +95,7 @@ public class ScoreboardManager implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if(config.getBoolean("started")) {
-            UpdatePlayerScore(plugin.getNerd(e.getPlayer()));
+            UpdatePlayerScore(plugin.getNerd(e.getPlayer().getUniqueId()));
         }
     }
 }

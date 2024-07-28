@@ -1,0 +1,64 @@
+package me.pm7.shady_business.Commands;
+
+import me.pm7.shady_business.Objects.Nerd;
+import me.pm7.shady_business.Objects.RoleType;
+import me.pm7.shady_business.ShadyBusiness;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class givelife implements CommandExecutor {
+    private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        // I hate you if you run the command from console
+        if(!(sender instanceof Player)) {
+            System.out.println("I am actually going to kill you.");
+            return true;
+        }
+        if(args.length == 1) {
+            Player receiverPlayer = Bukkit.getPlayer(args[0]);
+            if(receiverPlayer == null) { sender.sendMessage(ChatColor.RED + "Please specify a valid player"); return true; }
+            Nerd receiverNerd = plugin.getNerd(receiverPlayer.getUniqueId());
+            if(receiverNerd == null) { sender.sendMessage(ChatColor.RED + "Uhh... Has the game not started yet?"); return true; }
+
+            Player giverPlayer = (Player) sender;
+            Nerd giverNerd = plugin.getNerd(giverPlayer.getUniqueId());
+            if(giverNerd == null) { sender.sendMessage(ChatColor.RED + "Uhh... Has the game not started yet?"); return true; }
+
+            // Make sure the giver has lives to give
+            if(giverNerd.getLives() > 1) {
+                if(receiverNerd.getLives() > 0) {
+                    receiverNerd.addLife();
+                    giverNerd.removeLife();
+
+                    giverPlayer.sendMessage(ChatColor.GREEN + "You gave a life to " + args[0]);
+                    receiverPlayer.sendMessage(ChatColor.GREEN + "You received a life from " + giverPlayer.getName());
+
+                } else {
+                    // If the receiver is a ghost, check if the giver is a necromancer and if they have completed their objective or not
+                    if(giverNerd.getRole() == RoleType.NECROMANCER && !giverNerd.getObjectiveCompleted()) {
+                        receiverNerd.addLife(giverPlayer.getLocation());
+                        giverNerd.removeLife();
+                        giverNerd.setObjectiveCompleted(true);
+                        plugin.saveData();
+
+                        giverPlayer.sendMessage(ChatColor.GREEN + "You gave a life to " + args[0]);
+                        receiverPlayer.sendMessage(ChatColor.GREEN + "You received a life from " + giverPlayer.getName());
+                    } else {
+                        giverPlayer.sendMessage(ChatColor.RED + "You are not the necromancer. You can't revive this person");
+                    }
+                }
+            } else {
+                giverPlayer.sendMessage(ChatColor.RED + "You cannot commit suicide via generosity");
+            }
+        } else {
+            sender.sendMessage(ChatColor.RED + "Please specify a valid player");
+        }
+        return true;
+    }
+}
