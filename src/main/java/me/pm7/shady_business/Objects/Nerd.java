@@ -23,10 +23,9 @@ public class Nerd implements ConfigurationSerializable {
     private UUID uuid;
     private String name;
     private int lives;
-    private boolean objectiveCompleted = false;
     private boolean hadRoleLastSession = false;
     private RoleType role = RoleType.VILLAGER;
-    private List<Object> data = new ArrayList<>();
+    private HashMap<RoleData, Object> data = new HashMap<>();
 
     public void setUuid(UUID newID) { this.uuid = newID; }
     public UUID getUuid() {return this.uuid;}
@@ -82,8 +81,6 @@ public class Nerd implements ConfigurationSerializable {
     }
     public int getLives() { return this.lives; }
 
-    public void setObjectiveCompleted(boolean completed) { this.objectiveCompleted = completed; }
-    public boolean getObjectiveCompleted() { return this.objectiveCompleted; }
 
     public void setHadRoleLastSession(boolean hadRole) { this.hadRoleLastSession = hadRole; }
     public boolean getHadRoleLastSession() { return this.hadRoleLastSession; }
@@ -91,11 +88,11 @@ public class Nerd implements ConfigurationSerializable {
     public void setRole(RoleType type) { this.role = type;}
     public RoleType getRole() { return this.role; }
 
-    public void setData(List<Object> newData) { this.data = newData; }
-    public List<Object> getData() { return this.data; }
+    public void setData(HashMap<RoleData, Object> newData) { this.data = newData; }
+    public HashMap<RoleData, Object> getData() { return this.data; }
 
     @Override
-    public String toString() { return " \nName: " + this.getName() + "\nLives: " + this.getLives() + "\nobjectiveCompleted: " + objectiveCompleted + "\nRole: " + role + "\nOther Data: " + this.getData(); }
+    public String toString() { return " \nName: " + this.getName() + "\nLives: " + this.getLives() + "\nRole: " + role + "\nOther Data: " + this.getData(); }
 
     @NotNull
     @Override
@@ -105,7 +102,6 @@ public class Nerd implements ConfigurationSerializable {
         serializedData.put("uuid", this.uuid.toString());
         serializedData.put("lives", this.lives);
         serializedData.put("role", this.role.toString()); //.valueOf to get back
-        serializedData.put("objectiveCompleted", this.objectiveCompleted);
         serializedData.put("data", this.data);
         serializedData.put("hadRoleLastSession", this.hadRoleLastSession);
         return serializedData;
@@ -123,8 +119,12 @@ public class Nerd implements ConfigurationSerializable {
         nerd.uuid = UUID.fromString(serializedData.getString("uuid"));
         nerd.lives = serializedData.getInt("lives");
         nerd.role = RoleType.valueOf(serializedData.getString("role"));
-        nerd.objectiveCompleted = serializedData.getBoolean("objectiveCompleted");
-        nerd.data = (List<Object>) serializedData.getList("data");
+        ConfigurationSection dataSection = serializedData.getConfigurationSection("data");
+        HashMap<RoleData, Object> data = new HashMap<>();
+        for (String key : dataSection.getKeys(false)) {
+            data.put(RoleData.valueOf(key), dataSection.get(key));
+        }
+        nerd.data = data;
         nerd.hadRoleLastSession = serializedData.getBoolean("hadRoleLastSession");
         return nerd;
     }

@@ -1,18 +1,17 @@
 package me.pm7.shady_business.Listeners;
 
 import me.pm7.shady_business.Objects.Nerd;
+import me.pm7.shady_business.Objects.RoleData;
 import me.pm7.shady_business.Objects.RoleType;
 import me.pm7.shady_business.ShadyBusiness;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
@@ -20,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
 
 
 /*
@@ -29,48 +30,61 @@ import org.bukkit.potion.PotionEffectType;
 
     written before I actually got it working ^
 
+
+
+    got it working!!!! (8/2/24, like a week later)
+
  */
 
 
-public class InvestigatorPotion implements Listener {
+public class Investigator implements Listener {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
+
+    private final Random random = new Random();
 
     @EventHandler
     public void OnPotion(EntityPotionEffectEvent e) {
 
-        if(e.getEntity() instanceof Player) {
-            if(e.getNewEffect().getType() != PotionEffectType.LUCK) { return; }
-            e.setCancelled(true);
+        if(!(e.getEntity() instanceof Player)) { return; }
+        if(e.getNewEffect() == null) { return; }
+        if(e.getNewEffect().getType() != PotionEffectType.LUCK) { return; }
+        e.setCancelled(true);
 
-            // Make sure nothing happens if the investigator is splashed
-            Nerd nerd = plugin.getNerd(e.getEntity().getUniqueId());
-            if(nerd == null || nerd.getRole() == RoleType.INVESTIGATOR) { return; }
+        // Make sure nothing happens if the investigator is splashed
+        Nerd nerd = plugin.getNerd(e.getEntity().getUniqueId());
+        if(nerd == null || nerd.getRole() == RoleType.INVESTIGATOR) { return; }
 
-            // Get the actual investigator
-            Nerd investigator = null;
-            for (Nerd i : plugin.getNerds()) {
-                if(i.getRole() == RoleType.INVESTIGATOR) {
-                    investigator = i;
-                    break;
-                }
+        // Get the actual investigator
+        Nerd investigator = null;
+        for (Nerd i : plugin.getNerds()) {
+            if(i.getRole() == RoleType.INVESTIGATOR && i.getLives() > 1) {
+                investigator = i;
+                break;
             }
-            if(investigator == null) { return; }
-            Player p = Bukkit.getPlayer(investigator.getUuid());
-            if(p == null) { return; }
+        }
+        if(investigator == null) { return; }
+        Player p = Bukkit.getPlayer(investigator.getUuid());
+        if(p == null) { return; }
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            p.playSound(p, Sound.ENTITY_SHULKER_BULLET_HIT, 1, 0.65f);
 
             // Let the investigator know if they found the guy
             if(nerd.getRole() == RoleType.BOOGEYMAN) { p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "■ Boogeyman! ■");}
             else { p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "■ Not A Boogeyman! ■"); }
-        }
+        }, random.nextInt(5));
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        Player p = (Player) e.getInventory().getHolder();
-        if(p != null) {return;}
+        if(!(e.getInventory().getHolder() instanceof Player p)) {
+            e.setCancelled(true);
+            return;
+        }
+
         Nerd nerd = plugin.getNerd(p.getUniqueId());
         if(nerd == null || nerd.getRole() != RoleType.INVESTIGATOR) { return; }
-        if(!((Boolean) nerd.getData().get(0))) { return; }
+        if(!((Boolean) nerd.getData().get(RoleData.INVESTIGATOR_NEEDS_POTION))) { return; }
         Inventory inv = p.getInventory();
         int index = inv.firstEmpty();
         if(index == -1) { return; }
@@ -82,17 +96,17 @@ public class InvestigatorPotion implements Listener {
         meta.setCustomModelData(2);
         meta.setColor(Color.RED);
         meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, PotionEffect.INFINITE_DURATION, 1, true, false, false), true);
+        ponderingOrb.setItemMeta(meta);
         inv.addItem(ponderingOrb);
     }
 
     @EventHandler
     public void onInventoryMove(InventoryMoveItemEvent e) {
-        if(e.getDestination().getHolder() != e.getSource().getHolder()) {
+        if(e.getDestination().getType() != InventoryType.PLAYER) {
             if(e.getItem().getType() == Material.SPLASH_POTION && e.getItem().getItemMeta().getItemName().equals("Orb of Pondering")) {
                 e.setCancelled(true);
             }
         }
-
     }
 
     @EventHandler

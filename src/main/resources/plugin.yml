@@ -6,7 +6,7 @@ commands:
   start:
     description: "UwU~"
     usage: /<command>
-  stop:
+  endsession:
     description: "OwO what's this?"
   info:
     description: ">//w//<"

@@ -1,20 +1,15 @@
 package me.pm7.shady_business;
 
 import me.pm7.shady_business.Commands.*;
-import me.pm7.shady_business.Listeners.TwinHealthSync;
-import me.pm7.shady_business.Listeners.DeathListener;
-import me.pm7.shady_business.Listeners.JoinListener;
-import me.pm7.shady_business.Listeners.InvestigatorPotion;
+import me.pm7.shady_business.Listeners.*;
 import me.pm7.shady_business.Objects.Nerd;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class ShadyBusiness extends JavaPlugin {
     private static ShadyBusiness plugin;
@@ -32,17 +27,21 @@ public final class ShadyBusiness extends JavaPlugin {
         registerListeners();
 
         loadConfigData();
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::saveData, 0L, 6000L);
     }
 
     private void registerListeners() {
         ConfigurationSerialization.registerClass(Nerd.class);
-        getServer().getPluginManager().registerEvents(new TwinHealthSync(), this);
+        getServer().getPluginManager().registerEvents(new Twins(), this);
         getServer().getPluginManager().registerEvents(new DeathListener(), this);
         getServer().getPluginManager().registerEvents(new JoinListener(), this);
         getServer().getPluginManager().registerEvents(new ScoreboardManager(), this);
-        getServer().getPluginManager().registerEvents(new InvestigatorPotion(), this);
+        getServer().getPluginManager().registerEvents(new Investigator(), this);
+        getServer().getPluginManager().registerEvents(new Mimic(), this);
+        getServer().getPluginManager().registerEvents(new Transporter(), this);
         this.getCommand("start").setExecutor(new start());
-        this.getCommand("stop").setExecutor(new stop());
+        this.getCommand("endsession").setExecutor(new endsession());
         this.getCommand("info").setExecutor(new info());
         this.getCommand("givelife").setExecutor(new givelife());
         this.getCommand("test").setExecutor(new test());
@@ -52,7 +51,11 @@ public final class ShadyBusiness extends JavaPlugin {
 
     private void loadConfigData() {
         ConfigurationSection nerdSection = config.getConfigurationSection("nerds");
-        if(nerdSection == null) {config.createSection("nerds"); return; }
+        if(nerdSection == null) {
+            config.createSection("nerds");
+            saveConfig();
+            return;
+        }
 
         for (String newNerd : nerdSection.getKeys(false)) {
             ConfigurationSection section = nerdSection.getConfigurationSection(newNerd);
@@ -67,10 +70,12 @@ public final class ShadyBusiness extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        saveData();
         System.out.println("bye bye....");
     }
 
     public Nerd getNerd(UUID uuid) {
+        if(!config.getBoolean("started")) { return null; }
         for (Nerd nerd : nerdList) {
             if(nerd.getUuid().equals(uuid)) { return nerd; }
         }
@@ -78,6 +83,7 @@ public final class ShadyBusiness extends JavaPlugin {
         return null;
     }
     public Nerd getNerd(String name) {
+        if(!config.getBoolean("started")) { return null; }
         for (Nerd nerd : nerdList) {
             if(nerd.getName().equals(name)) { return nerd; }
         }
@@ -93,7 +99,14 @@ public final class ShadyBusiness extends JavaPlugin {
         for (Nerd nerd : nerdList) {
             ConfigurationSection nerdSection = nerdsSection.createSection(nerd.getName());
             for (Map.Entry<String, Object> entry : nerd.serialize().entrySet()) {
-                nerdSection.set(entry.getKey(), entry.getValue());
+                if(!(entry.getValue() instanceof HashMap<?, ?> map)) {
+                    nerdSection.set(entry.getKey(), entry.getValue());
+                } else {
+                    ConfigurationSection dataSection = nerdSection.createSection("data");
+                    for (Map.Entry<?, ?> entry1 : map.entrySet()) {
+                        dataSection.set((entry1.getKey()).toString(), entry1.getValue());
+                    }
+                }
             }
         }
         saveConfig();

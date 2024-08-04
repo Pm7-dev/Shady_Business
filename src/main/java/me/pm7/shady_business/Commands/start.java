@@ -1,6 +1,7 @@
 package me.pm7.shady_business.Commands;
 
 import me.pm7.shady_business.Objects.Nerd;
+import me.pm7.shady_business.Objects.RoleData;
 import me.pm7.shady_business.Objects.RoleType;
 import me.pm7.shady_business.ScoreboardManager;
 import me.pm7.shady_business.ShadyBusiness;
@@ -31,7 +32,7 @@ public class start implements CommandExecutor {
         if(commandSender.isOp()) {
             List<Nerd> nerds = plugin.getNerds();
 
-            if(!config.getBoolean("started ")) {
+            if(!config.getBoolean("started")) {
                 Bukkit.broadcastMessage(ChatColor.RED + "Game Started!");
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -40,10 +41,9 @@ public class start implements CommandExecutor {
                         nerd.setUuid(p.getUniqueId());
                         nerd.setName(p.getName());
                         nerd.setLives(4);
-                        nerd.setObjectiveCompleted(false);
                         nerd.setHadRoleLastSession(false);
                         nerd.setRole(RoleType.NONE);
-                        nerd.setData(new ArrayList<>());
+                        nerd.setData(new HashMap<>());
 
                         nerds.add(nerd);
 
@@ -56,10 +56,13 @@ public class start implements CommandExecutor {
                 world.setDifficulty(Difficulty.HARD);
                 world.setGameRule(GameRule.DO_INSOMNIA, false);
                 world.setGameRule(GameRule.KEEP_INVENTORY, true);
+
                 World nether = Bukkit.getWorld("world_nether");
                 nether.setDifficulty(Difficulty.HARD);
                 nether.setGameRule(GameRule.DO_INSOMNIA, false);
                 nether.setGameRule(GameRule.KEEP_INVENTORY, true);
+
+                config.set("started", true);
             } else {
                 Bukkit.broadcastMessage(ChatColor.RED + "Session Started!");
 
@@ -69,8 +72,7 @@ public class start implements CommandExecutor {
                     else { nerd.setHadRoleLastSession(true); }
 
                     nerd.setRole(RoleType.VILLAGER);
-                    nerd.setData(new ArrayList<>());
-                    nerd.setObjectiveCompleted(false);
+                    nerd.setData(new HashMap<>());
 
                     Bukkit.getPlayer(nerd.getUuid()).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20.0d);
 
@@ -79,6 +81,7 @@ public class start implements CommandExecutor {
                     if(p != null) {
                         Inventory inv = p.getInventory();
                         for(ItemStack item : inv.getContents()) {
+                            if(item == null) { continue; }
                             if(item.getType() == Material.SPLASH_POTION && item.getItemMeta().getItemName().equals("Orb of Pondering")) {
                                 inv.remove(item);
                             }
@@ -89,7 +92,6 @@ public class start implements CommandExecutor {
 
             plugin.saveData();
 
-            config.set("started", true);
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 Bukkit.broadcastMessage(ChatColor.RED + "Roles will be chosen soon.");
 
@@ -97,11 +99,14 @@ public class start implements CommandExecutor {
 
                     // Don't allow red names, ghosts, or offline players to get a role
                     List<Nerd> roleSelectable = new ArrayList<>(nerds);
-                    Iterator<Nerd> it = nerds.iterator();
-                    while(it.hasNext()) {
-                        Nerd nerd = it.next();
-                        if(nerd == null || nerd.getLives() <= 1 || Bukkit.getPlayer(nerd.getUuid()) == null ) { roleSelectable.remove(nerd); continue; }
-                        if(!nerd.getHadRoleLastSession()) { roleSelectable.add(nerd); }
+                    for (Nerd nerd : nerds) {
+                        if (nerd == null || nerd.getLives() <= 1 || Bukkit.getPlayer(nerd.getUuid()) == null) {
+                            roleSelectable.remove(nerd);
+                            continue;
+                        }
+                        if (!nerd.getHadRoleLastSession()) {
+                            roleSelectable.add(nerd);
+                        }
                     }
 
                     boolean boogeyExists = false;
@@ -123,27 +128,27 @@ public class start implements CommandExecutor {
                     }
 
                     // What do you call an alligator in a vest?
-                    if(boogeyExists) {
+                    //if(boogeyExists) {
                         if(!roleSelectable.isEmpty()) { addRole(RoleType.INVESTIGATOR, roleSelectable); }
-                    }
+                    //}
 
                     // mimc
                     if(!roleSelectable.isEmpty()) { addRole(RoleType.MIMIC, roleSelectable); }
 
-                    // twinks
+                    // twinks :3
                     if(new HashSet<>(roleSelectable).size() > 1) {
                         Nerd twin = addTwin(roleSelectable);
                         Nerd twin2 = addTwin(roleSelectable);
-                        twin.getData().add(twin2.getName());
-                        twin2.getData().add(twin.getName());
-                        // THE PRIME TWIN OF YOUR LIFE (gotta do it) NOW (don't wait and) LIVE IT (today)
-                        twin.getData().add(true); // True is in index 1 to show that this is the Prime Twin. (The Prime Twin is the twin that will store the health data)
-                        twin2.getData().add(false); // False is in index 1 to show that this is not the Prime Twin.
+                        twin.getData().put(RoleData.TWIN_PARTNER_NAME, twin2.getName());
+                        twin2.getData().put(RoleData.TWIN_PARTNER_NAME, twin.getName());
+                        // PRIME TWIN OF YOUR LIFE! (gotta do it) NOW! (don't wait and) LIVE IT! (today)
+                        twin.getData().put(RoleData.TWIN_IS_PRIME, true);
+                        twin2.getData().put(RoleData.TWIN_IS_PRIME, false);
                     }
 
                     // jan pi wawa tawa
                     if(!roleSelectable.isEmpty()) { addRole(RoleType.TRANSPORTER, roleSelectable); }
-
+                    // side note: "wawa tawa" has become so fun to say that I now exclusively refer to the transporter as this in my head
 
                     //sou[p
                     for(Player p : Bukkit.getOnlinePlayers()) {
@@ -151,16 +156,15 @@ public class start implements CommandExecutor {
                         p.playSound(p, "role.anticipation", 1, 1);
                     }
 
-
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                         for(Nerd nerd : plugin.getNerds()) {
                             Player p = Bukkit.getPlayer(nerd.getUuid());
-                            if(p==null) { System.out.println("uh oh - nully nerd"); continue; }
+                            if(p==null) { continue; }
 
                             switch (nerd.getRole()) {
                                 case VILLAGER: {
                                     p.sendTitle(ChatColor.WHITE + "Villager", "", 10, 70, 20);
-                                    p.sendMessage(ChatColor.WHITE + "You are the Villager! You have no special task to do today :D");
+                                    p.sendMessage(ChatColor.WHITE + "You are a Villager! You have no special task to do today :D");
                                     p.playSound(p, "role.villager", 1, 1);
                                     break;
                                 }
@@ -170,12 +174,18 @@ public class start implements CommandExecutor {
                                     // waste of processing power
                                     String boogies;
                                     List<String> boogeymen = new ArrayList<>();
-                                    for(Nerd boogey : plugin.getNerds()) { if(boogey.getRole() == RoleType.BOOGEYMAN && boogey.getUuid() != nerd.getUuid()) { boogeymen.add(boogey.getName()); } }
+                                    for(Nerd boogey : plugin.getNerds()) {
+                                        if(boogey.getRole() == RoleType.BOOGEYMAN && boogey.getUuid() != nerd.getUuid()) {
+                                            boogeymen.add(boogey.getName());
+                                        }
+                                    }
                                     if(boogeymen.size() == 2) { boogies = "new friends " + boogeymen.get(0) + ", and " + boogeymen.get(1); }
-                                    else { boogies = "new friend " + boogeymen.get(0); }
+                                    else { boogies = "new friend " + boogeymen.getFirst(); }
 
                                     p.sendMessage(ChatColor.RED + "You are a Boogeyman! You and your " + boogies + " must each get a kill before the end of the session, or each of you will lose one life.");
                                     p.playSound(p, "role.boogeyman", 1, 1);
+
+                                    nerd.getData().put(RoleData.BOOGEYMAN_CURED, false);
                                     break;
                                 }
                                 case INVESTIGATOR: {
@@ -185,10 +195,10 @@ public class start implements CommandExecutor {
 
                                     Inventory inv = p.getInventory();
                                     if(inv.firstEmpty() == -1) {
-                                        nerd.getData().add(true); //true if the potion stil has to be given
+                                        nerd.getData().put(RoleData.INVESTIGATOR_NEEDS_POTION, true);
                                     }
                                     else {
-                                        nerd.getData().add(false);
+                                        nerd.getData().put(RoleData.INVESTIGATOR_NEEDS_POTION, false);
 
                                         ItemStack ponderingOrb = new ItemStack(Material.SPLASH_POTION);
                                         PotionMeta meta = (PotionMeta) ponderingOrb.getItemMeta();
@@ -197,6 +207,7 @@ public class start implements CommandExecutor {
                                         meta.setCustomModelData(2);
                                         meta.setColor(Color.RED);
                                         meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, PotionEffect.INFINITE_DURATION, 1, true, false, false), true);
+                                        ponderingOrb.setItemMeta(meta);
                                         inv.addItem(ponderingOrb);
                                     }
                                     break;
@@ -205,12 +216,16 @@ public class start implements CommandExecutor {
                                     p.sendTitle(ChatColor.GOLD + "Necromancer", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.GOLD + "You are the Necromancer! You are able to give one of your lives away to a ghost player with /givelife! You can also toggle chat with the dead via /rolechat");
                                     p.playSound(p, "role.necromancer", 1, 1);
+
+                                    nerd.getData().put(RoleData.NECROMANCER_USED, false);
                                     break;
                                 }
                                 case VICTIM: {
                                     p.sendTitle(ChatColor.GREEN + "Victim", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.GREEN + "You are the Victim! Your goal is to get killed by a boogeyman. If you are killed, you will gain a life instead of losing a life, and the boogeyman will not be cured.");
                                     p.playSound(p, "role.victim", 1, 1);
+
+                                    nerd.getData().put(RoleData.VICTIM_COMPLETED, false);
                                     break;
                                 }
                                 case MIMIC: {
@@ -224,7 +239,7 @@ public class start implements CommandExecutor {
                                     p.sendMessage(ChatColor.YELLOW + "You are one of the Twins! Your health will be linked to another players' for the entire session. Good luck!");
                                     p.playSound(p, "role.twin", 1, 1);
 
-                                    Player other = Bukkit.getPlayer(((Nerd) nerd.getData().get(1)).getUuid());
+                                    Player other = Bukkit.getPlayer(plugin.getNerd((String) nerd.getData().get(RoleData.TWIN_PARTNER_NAME)).getUuid());
 
                                     other.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(30.0d);
                                     p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(30.0d);
@@ -233,20 +248,28 @@ public class start implements CommandExecutor {
 
                                     Nerd twinPrime;
                                     Nerd otherTwin;
-                                    if (((boolean) nerd.getData().get(1))) { twinPrime = nerd; otherTwin = (Nerd) nerd.getData().get(1); }
-                                    else { twinPrime = (Nerd) nerd.getData().get(1); otherTwin = nerd; }
+                                    if ((boolean) nerd.getData().get(RoleData.TWIN_IS_PRIME)) {
+                                        twinPrime = nerd;
+                                        otherTwin = plugin.getNerd((String) nerd.getData().get(RoleData.TWIN_PARTNER_NAME));
+                                    } else {
+                                        twinPrime = plugin.getNerd((String) nerd.getData().get(RoleData.TWIN_PARTNER_NAME));
+                                        otherTwin = nerd;
+                                    }
 
-                                    twinPrime.getData().add(30.0d);
-                                    otherTwin.getData().add(-77);
+                                    twinPrime.getData().put(RoleData.TWIN_SHARED_HEALTH, 30.0d);
+                                    otherTwin.getData().put(RoleData.TWIN_SHARED_HEALTH, -3.621d); // D:
 
+                                    twinPrime.getData().put(RoleData.TWIN_MIMIC_NAME, null); // Only set the name in prime twin because erualsgkhpsaldfj
+                                    otherTwin.getData().put(RoleData.TWIN_MIMIC_NAME, null);
                                     break;
                                 }
                                 case TRANSPORTER: {
                                     p.sendTitle(ChatColor.AQUA + "Transporter", "", 10, 70, 20);
-                                    p.sendMessage(ChatColor.AQUA + "You are the Transporter! You will be able to swap the locations of two players by right clicking them. Right click one player with an empty hand to select them, and right click a second player with an empty hand to swap their locations. Right clicking the same player you first right clicked will deselect them.");
+                                    p.sendMessage(ChatColor.AQUA + "You are the Transporter! You will be able to swap the locations of two players by right clicking them. Right click one player with an empty hand to select them, and right click a second player with an empty hand to swap their locations. Right clicking the same player you first right clicked will deselect them. You can use this power two times.");
                                     p.playSound(p, "role.transporter", 1, 1);
 
-                                    nerd.getData().add(2);
+                                    nerd.getData().put(RoleData.TRANSPORTER_TELEPORTS_LEFT, 2);
+                                    nerd.getData().put(RoleData.TRANSPORTER_SELECTED_PLAYER, null);
                                     break;
                                 }
                             }
@@ -267,7 +290,7 @@ public class start implements CommandExecutor {
         Nerd selectedInList = plugin.getNerd(selected.getUuid());
         selectedInList.setRole(roleType);
 
-        roleSelectable.removeIf(nerd -> nerd == selected); // obligatory _axoplasm reference
+        roleSelectable.removeIf(nerd -> nerd == selected); // obligatory _axoplasm reference. By request, Means nothing
     }
 
     Nerd addTwin(List<Nerd> roleSelectable) {

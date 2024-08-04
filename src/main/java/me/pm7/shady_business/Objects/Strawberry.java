@@ -12,6 +12,7 @@ public class Strawberry {
 }
 
 
+// jordgubbe
 
 
 
@@ -197,4 +198,12 @@ public class Strawberry {
 
 
 
-// sometHing shAdy is goiNG "ON"¿¿
+
+
+
+
+
+
+
+
+// sometHing shAdy is goiNG "ON"¿¿  '

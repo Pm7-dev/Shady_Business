@@ -1,6 +1,7 @@
 package me.pm7.shady_business.Commands;
 
 import me.pm7.shady_business.Objects.Nerd;
+import me.pm7.shady_business.Objects.RoleData;
 import me.pm7.shady_business.Objects.RoleType;
 import me.pm7.shady_business.ShadyBusiness;
 import org.bukkit.Bukkit;
@@ -10,11 +11,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+// intellij keeps telling me to capitalize the L in givelife and I don't want to.
 public class givelife implements CommandExecutor {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+
         // I hate you if you run the command from console
         if(!(sender instanceof Player)) {
             System.out.println("I am actually going to kill you.");
@@ -30,6 +33,12 @@ public class givelife implements CommandExecutor {
             Nerd giverNerd = plugin.getNerd(giverPlayer.getUniqueId());
             if(giverNerd == null) { sender.sendMessage(ChatColor.RED + "Uhh... Has the game not started yet?"); return true; }
 
+            // I don't want to deal with this case, so I will not.
+            if(receiverNerd.getRole() == RoleType.TWINS || giverNerd.getRole() == RoleType.TWINS) {
+                sender.sendMessage(ChatColor.RED + "Twins cannot give/receive lives.");
+                return true;
+            }
+
             // Make sure the giver has lives to give
             if(giverNerd.getLives() > 1) {
                 if(receiverNerd.getLives() > 0) {
@@ -41,20 +50,20 @@ public class givelife implements CommandExecutor {
 
                 } else {
                     // If the receiver is a ghost, check if the giver is a necromancer and if they have completed their objective or not
-                    if(giverNerd.getRole() == RoleType.NECROMANCER && !giverNerd.getObjectiveCompleted()) {
+                    if(giverNerd.getRole() == RoleType.NECROMANCER && !(Boolean) giverNerd.getData().get(RoleData.NECROMANCER_USED)) {
                         receiverNerd.addLife(giverPlayer.getLocation());
                         giverNerd.removeLife();
-                        giverNerd.setObjectiveCompleted(true);
+                        giverNerd.getData().put(RoleData.NECROMANCER_USED, true);
                         plugin.saveData();
 
                         giverPlayer.sendMessage(ChatColor.GREEN + "You gave a life to " + args[0]);
                         receiverPlayer.sendMessage(ChatColor.GREEN + "You received a life from " + giverPlayer.getName());
                     } else {
-                        giverPlayer.sendMessage(ChatColor.RED + "You are not the necromancer. You can't revive this person");
+                        giverPlayer.sendMessage(ChatColor.RED + "You are either not the necromancer, or you have already revived someone");
                     }
                 }
             } else {
-                giverPlayer.sendMessage(ChatColor.RED + "You cannot commit suicide via generosity");
+                giverPlayer.sendMessage(ChatColor.RED + "You cannot commit suicide via generosity.");
             }
         } else {
             sender.sendMessage(ChatColor.RED + "Please specify a valid player");
