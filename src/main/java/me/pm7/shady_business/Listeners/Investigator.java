@@ -34,6 +34,8 @@ import java.util.Random;
 
     got it working!!!! (8/2/24, like a week later)
 
+    I broke it again!!! (8/5/24)
+
  */
 
 
@@ -52,7 +54,7 @@ public class Investigator implements Listener {
 
         // Make sure nothing happens if the investigator is splashed
         Nerd nerd = plugin.getNerd(e.getEntity().getUniqueId());
-        if(nerd == null || nerd.getRole() == RoleType.INVESTIGATOR) { return; }
+        if(nerd == null) { return; }
 
         // Get the actual investigator
         Nerd investigator = null;
@@ -72,13 +74,16 @@ public class Investigator implements Listener {
             // Let the investigator know if they found the guy
             if(nerd.getRole() == RoleType.BOOGEYMAN) { p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "■ Boogeyman! ■");}
             else { p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "■ Not A Boogeyman! ■"); }
-        }, random.nextInt(5));
+        }, random.nextInt(8) + 2);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if(!(e.getInventory().getHolder() instanceof Player p)) {
-            e.setCancelled(true);
+            if(e.getCurrentItem() == null) { return; }
+            if(e.getCurrentItem().getType() == Material.SPLASH_POTION && e.getCurrentItem().getItemMeta().getItemName().equals("Orb of Pondering")) {
+                e.setCancelled(true);
+            }
             return;
         }
 

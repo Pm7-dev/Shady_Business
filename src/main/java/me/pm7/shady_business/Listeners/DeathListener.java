@@ -16,6 +16,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class DeathListener implements Listener {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
@@ -26,6 +27,11 @@ public class DeathListener implements Listener {
 
         // No reason to do anything if we're not started yet
         if(!config.getBoolean("started")) { return; }
+
+        // Save the death to config
+        List<String> deaths = config.getStringList("deathList");
+        deaths.add(e.getDeathMessage());
+        config.set("deathList", deaths);
 
         // Get the dead nerd
         Player p = e.getEntity();
@@ -47,6 +53,8 @@ public class DeathListener implements Listener {
             }
         }
 
+        boolean victimthing = false;
+
         // booger.
         Player pk = p.getKiller(); // i LOVE having inconsistent naming conventions
         if(pk != null) {
@@ -55,28 +63,45 @@ public class DeathListener implements Listener {
                 if (killer.getRole() == RoleType.BOOGEYMAN && killer.getLives() > 1) {
                     if(nerd.getLives() > 1) {
                         if (nerd.getRole() == RoleType.VICTIM && !(boolean) nerd.getData().get(RoleData.VICTIM_COMPLETED)) {
-                            pk.sendTitle(ChatColor.RED + "You got tricked lol", "", 10, 70, 20);
+                            pk.sendTitle(ChatColor.RED + "You've been tricked!'", "", 10, 70, 20);
+                            pk.sendMessage(ChatColor.RED + "The player you killed was a victim");
                             nerd.getData().put(RoleData.VICTIM_COMPLETED, true);
                             nerd.addLife();
                             p.sendTitle(ChatColor.GREEN + "You gained a life!", "", 10, 70, 20);
 
-                            plugin.saveData();
-                            return;
-                        } else {
+                            victimthing = true;
+
+                        } else if (nerd.getRole() != RoleType.BOOGEYMAN) {
                             pk.sendTitle(ChatColor.GREEN + "You have been cured!", "", 10, 70, 20);
                             nerd.getData().put(RoleData.BOOGEYMAN_CURED, true);
+
+                            for(Nerd nerd1 : plugin.getNerds()) {
+                                if(killer == nerd1) { continue; }
+                                if(nerd1.getRole() == RoleType.BOOGEYMAN) {
+                                    Player boog = Bukkit.getPlayer(nerd1.getUuid());
+                                    if(boog != null) {
+                                        boog.sendMessage(ChatColor.RED + pk.getName() + " has been cured!");
+                                    }
+                                }
+                            }
+
                         }
+
+                        e.setDeathMessage("");
                     }
                 }
             }
         }
 
-        nerd.removeLife();
+        if(!victimthing) {
+            nerd.removeLife();
+        }
 
         //fjjjjjjjjjjkl gonk
         plugin.saveData();
 
         // Death message generation
+        if(Objects.requireNonNull(e.getDeathMessage()).isBlank()) { return; }
         List<String> names = new ArrayList<>();
         for(Player i: Bukkit.getOnlinePlayers()) {names.add(i.getName());}
         List<String> words = new ArrayList<>(Arrays.asList(e.getDeathMessage().split(" ")));

@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.PacketPlayOutUpdateHealth;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.network.PlayerConnection;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -36,22 +37,7 @@ public class test implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-
-        Player pm7 = Bukkit.getPlayer("_Pm7");
-
-        Inventory inv = pm7.getInventory();
-
-        ItemStack ponderingOrb = new ItemStack(Material.SPLASH_POTION);
-
-        PotionMeta meta = (PotionMeta) ponderingOrb.getItemMeta();
-        meta.setItemName("Orb of Pondering");
-        meta.setRarity(ItemRarity.RARE);
-        meta.setCustomModelData(2);
-        meta.setColor(Color.RED);
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, PotionEffect.INFINITE_DURATION, 1, true, false, false), true);
-        ponderingOrb.setItemMeta(meta);
-        inv.addItem(ponderingOrb);
-
+        commandSender.sendMessage(ChatColor.DARK_RED + "You are one of the Condemned! When there are 30 minutes left in the session, players will be prompted to either vote for you, or " + "OwO" + " to explode. The rest of the players will be notified of this shortly. Good luck!");
         return true;
     }
 }

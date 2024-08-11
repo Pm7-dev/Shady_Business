@@ -15,8 +15,10 @@ import org.bukkit.scoreboard.Team;
         this entire file was pretty much just copied and pasted from the Limited Time Offer plugin lol
 
         I don't have anything else to say but I already typed /* so now I have to use several lines or I will DIE!
+
         tomo mi jo e pipi mute. ni li nasa, taso pipi ni li suwi :3
         seme?
+        mi sona ala :D
  */
 
 public class ScoreboardManager implements Listener {

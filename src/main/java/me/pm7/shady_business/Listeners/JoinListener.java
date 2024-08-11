@@ -15,16 +15,16 @@ import java.util.HashMap;
 
 public class JoinListener implements Listener {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
-    private ConfigurationSection config = plugin.getConfig();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        if(config.getBoolean("started")) {
+        if(plugin.getConfig().getBoolean("started")) {
             Nerd nerd = plugin.getNerd(e.getPlayer().getUniqueId());
             if(nerd == null) {
+                Player p = e.getPlayer();
                 Nerd newNerd = new Nerd();
-                newNerd.setUuid(e.getPlayer().getUniqueId());
-                newNerd.setName(e.getPlayer().getName());
+                newNerd.setUuid(p.getUniqueId());
+                newNerd.setName(p.getName());
                 newNerd.setLives(4);
                 newNerd.setRole(RoleType.VILLAGER);
                 newNerd.setData(new HashMap<>());

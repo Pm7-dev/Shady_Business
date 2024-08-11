@@ -42,6 +42,7 @@ public final class ShadyBusiness extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Transporter(), this);
         this.getCommand("start").setExecutor(new start());
         this.getCommand("endsession").setExecutor(new endsession());
+        this.getCommand("setlife").setExecutor(new setlife());
         this.getCommand("info").setExecutor(new info());
         this.getCommand("givelife").setExecutor(new givelife());
         this.getCommand("test").setExecutor(new test());
@@ -65,7 +66,7 @@ public final class ShadyBusiness extends JavaPlugin {
             nerdList.add(nerd);
         }
 
-        System.out.println("configuwation data woaded OwO~");
+        System.out.println("OwO~ configuwation data woaded");
     }
 
     @Override
@@ -114,3 +115,12 @@ public final class ShadyBusiness extends JavaPlugin {
 
     public static ShadyBusiness getPlugin() { return plugin; }
 }
+
+
+// for some reason, I seem to have left this file commentless
+// you'd think I'd put the most easter eggs here to keep your attention, but no
+// everything interesting is at the bottom of the file
+// if you can even consider this interesting, that is
+// whatever, there's other things elsewhere
+// go find those and stop reading this
+// byeeeee ^w^

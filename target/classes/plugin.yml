@@ -10,7 +10,12 @@ commands:
     description: "OwO what's this?"
   info:
     description: ">//w//<"
+    usage: /<command>
   givelife:
     description: "^w^"
+    usage: /<command>
+  setlife:
+    description: "only for admins. sets the life count of a player"
+    usage: /<command> <player> <integer>
   test:
     description: tests whatever the current test is. Should not ever be run.

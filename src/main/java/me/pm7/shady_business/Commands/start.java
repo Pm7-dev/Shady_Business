@@ -74,11 +74,11 @@ public class start implements CommandExecutor {
                     nerd.setRole(RoleType.VILLAGER);
                     nerd.setData(new HashMap<>());
 
-                    Bukkit.getPlayer(nerd.getUuid()).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20.0d);
-
-                    // Clear the investigator potion lol
                     Player p = Bukkit.getPlayer(nerd.getUuid());
                     if(p != null) {
+                        p.getAttribute(Attribute . GENERIC_MAX_HEALTH).setBaseValue(20.0d);
+
+                        // Clear the investigator potion lol
                         Inventory inv = p.getInventory();
                         for(ItemStack item : inv.getContents()) {
                             if(item == null) { continue; }
@@ -97,6 +97,11 @@ public class start implements CommandExecutor {
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
+                    // add one to the session count here, for some reason
+                    int sessions = config.getInt("session");
+                    sessions++;
+                    config.set("sessions", sessions);
+
                     // Don't allow red names, ghosts, or offline players to get a role
                     List<Nerd> roleSelectable = new ArrayList<>(nerds);
                     for (Nerd nerd : nerds) {
@@ -109,9 +114,8 @@ public class start implements CommandExecutor {
                         }
                     }
 
-                    boolean boogeyExists = false;
-
                     // Stupidest possible way of making either two or three boogeymen
+                    boolean boogeyExists = false;
                     if(new HashSet<>(roleSelectable).size() > 3) {
                         boogeyExists = true;
                         for (int i = 0; i < rand.nextInt(2) + 2; i++) { addRole(RoleType.BOOGEYMAN, roleSelectable); }
@@ -122,15 +126,45 @@ public class start implements CommandExecutor {
                         if(!roleSelectable.isEmpty()) { addRole(RoleType.NECROMANCER, roleSelectable); }
                     }
 
+                    // role of scope creep
+                    if(!roleSelectable.isEmpty() && sessions > 1) {
+                        List<Nerd> darkGreen = new ArrayList<>();
+                        for(Nerd nerd : roleSelectable) {
+                            if(nerd.getLives() == 4) {
+                                darkGreen.add(nerd);
+                            }
+                        }
+                        if(new HashSet<>(darkGreen).size() > 1) {
+                            Nerd n1 = addCondemned(darkGreen);
+                            roleSelectable.removeIf(nerd -> nerd == n1);
+                            Nerd n2 = addCondemned(darkGreen);
+                            roleSelectable.removeIf(nerd -> nerd == n2);
+                        } else {
+                            // If it cannot be done with dark greens, continue with light greens
+                            List<Nerd> green = new ArrayList<>();
+                            for(Nerd nerd : roleSelectable) {
+                                if(nerd.getLives() == 3) {
+                                    green.add(nerd);
+                                }
+                            }
+                            if(new HashSet<>(green).size() > 1) {
+                                Nerd n1 = addCondemned(green);
+                                roleSelectable.removeIf(nerd -> nerd == n1);
+                                Nerd n2 = addCondemned(green);
+                                roleSelectable.removeIf(nerd -> nerd == n2);
+                            }
+                        }
+                    }
+
                     // Victmdmsfk
                     if(boogeyExists) {
                         if (!roleSelectable.isEmpty()) { addRole(RoleType.VICTIM, roleSelectable); }
                     }
 
                     // What do you call an alligator in a vest?
-                    //if(boogeyExists) {
+                    if(boogeyExists) {
                         if(!roleSelectable.isEmpty()) { addRole(RoleType.INVESTIGATOR, roleSelectable); }
-                    //}
+                    }
 
                     // mimc
                     if(!roleSelectable.isEmpty()) { addRole(RoleType.MIMIC, roleSelectable); }
@@ -153,7 +187,7 @@ public class start implements CommandExecutor {
                     //sou[p
                     for(Player p : Bukkit.getOnlinePlayers()) {
                         p.sendTitle(ChatColor.GREEN + "Your role is...", "", 10, 100, 20);
-                        p.playSound(p, "role.anticipation", 1, 1);
+                        p.playSound(p, Sound.BLOCK_VAULT_ACTIVATE, 1, 0.5f);
                     }
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -161,11 +195,13 @@ public class start implements CommandExecutor {
                             Player p = Bukkit.getPlayer(nerd.getUuid());
                             if(p==null) { continue; }
 
+                            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 1.0f);
+                            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 2.0f);
+
                             switch (nerd.getRole()) {
                                 case VILLAGER: {
                                     p.sendTitle(ChatColor.WHITE + "Villager", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.WHITE + "You are a Villager! You have no special task to do today :D");
-                                    p.playSound(p, "role.villager", 1, 1);
                                     break;
                                 }
                                 case BOOGEYMAN: {
@@ -183,7 +219,6 @@ public class start implements CommandExecutor {
                                     else { boogies = "new friend " + boogeymen.getFirst(); }
 
                                     p.sendMessage(ChatColor.RED + "You are a Boogeyman! You and your " + boogies + " must each get a kill before the end of the session, or each of you will lose one life.");
-                                    p.playSound(p, "role.boogeyman", 1, 1);
 
                                     nerd.getData().put(RoleData.BOOGEYMAN_CURED, false);
                                     break;
@@ -191,7 +226,6 @@ public class start implements CommandExecutor {
                                 case INVESTIGATOR: {
                                     p.sendTitle(ChatColor.BLUE + "Investigator", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.BLUE + "You are the Investigator! Your task is to figure out who the boogeymen are. You will now receive one splash potion of revealing, which will put a red box in chat if it hits a boogeyman, and a green box in chat if it doesn't. Look for large groups to get the most people!");
-                                    p.playSound(p, "role.investigator", 1, 1);
 
                                     Inventory inv = p.getInventory();
                                     if(inv.firstEmpty() == -1) {
@@ -214,8 +248,7 @@ public class start implements CommandExecutor {
                                 }
                                 case NECROMANCER: {
                                     p.sendTitle(ChatColor.GOLD + "Necromancer", "", 10, 70, 20);
-                                    p.sendMessage(ChatColor.GOLD + "You are the Necromancer! You are able to give one of your lives away to a ghost player with /givelife! You can also toggle chat with the dead via /rolechat");
-                                    p.playSound(p, "role.necromancer", 1, 1);
+                                    p.sendMessage(ChatColor.GOLD + "You are the Necromancer! You are able to give one of your lives away to a ghost player with /givelife!");
 
                                     nerd.getData().put(RoleData.NECROMANCER_USED, false);
                                     break;
@@ -223,21 +256,18 @@ public class start implements CommandExecutor {
                                 case VICTIM: {
                                     p.sendTitle(ChatColor.GREEN + "Victim", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.GREEN + "You are the Victim! Your goal is to get killed by a boogeyman. If you are killed, you will gain a life instead of losing a life, and the boogeyman will not be cured.");
-                                    p.playSound(p, "role.victim", 1, 1);
 
                                     nerd.getData().put(RoleData.VICTIM_COMPLETED, false);
                                     break;
                                 }
                                 case MIMIC: {
                                     p.sendTitle(ChatColor.LIGHT_PURPLE + "Mimic", "", 10, 70, 20);
-                                    p.sendMessage(ChatColor.LIGHT_PURPLE + "You are the Mimic! You must right click to copy someone else's role before the end of the session or you will lose a life!");
-                                    p.playSound(p, "role.mimic", 1, 1);
+                                    p.sendMessage(ChatColor.LIGHT_PURPLE + "You are the Mimic! You must right click to copy someone else's role before the end of the session or you will lose a life! To select a player, crouch and right click them with an empty hand.");
                                     break;
                                 }
                                 case TWINS: {
                                     p.sendTitle(ChatColor.YELLOW + "Twin", "", 10, 70, 20);
-                                    p.sendMessage(ChatColor.YELLOW + "You are one of the Twins! Your health will be linked to another players' for the entire session. Good luck!");
-                                    p.playSound(p, "role.twin", 1, 1);
+                                    p.sendMessage(ChatColor.YELLOW + "You are one of the Twins! Your health will be linked to another players' for the entire session or until one of you turn red. Good luck!");
 
                                     Player other = Bukkit.getPlayer(plugin.getNerd((String) nerd.getData().get(RoleData.TWIN_PARTNER_NAME)).getUuid());
 
@@ -265,12 +295,27 @@ public class start implements CommandExecutor {
                                 }
                                 case TRANSPORTER: {
                                     p.sendTitle(ChatColor.AQUA + "Transporter", "", 10, 70, 20);
-                                    p.sendMessage(ChatColor.AQUA + "You are the Transporter! You will be able to swap the locations of two players by right clicking them. Right click one player with an empty hand to select them, and right click a second player with an empty hand to swap their locations. Right clicking the same player you first right clicked will deselect them. You can use this power two times.");
-                                    p.playSound(p, "role.transporter", 1, 1);
+                                    p.sendMessage(ChatColor.AQUA + "You are the Transporter! You will be able to swap the locations of two players by right clicking them. Crouch and right click a player with an empty hand to select/deselect them, and do the same with a different player to swap their locations. You can use this power two times.");
 
                                     nerd.getData().put(RoleData.TRANSPORTER_TELEPORTS_LEFT, 2);
                                     nerd.getData().put(RoleData.TRANSPORTER_SELECTED_PLAYER, null);
                                     break;
+                                }
+                                case CONDEMNED: {
+                                    String other = "ERROR - OTHER CONDEMNED NOT FOUND";
+                                    for(Nerd condemned : plugin.getNerds()) {
+                                        if(condemned.getRole() == RoleType.CONDEMNED) {
+                                            if(condemned != nerd) {
+                                                other = condemned.getName();
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    p.sendTitle(ChatColor.DARK_RED + "Condemned", "", 10, 70, 20);
+                                    p.sendMessage(ChatColor.DARK_RED + "You are one of the Condemned! When there are 30 minutes left in the session, players will be prompted to either vote for you, or " + other + " to explode. The rest of the players will be notified of this shortly. Good luck!");
+
+                                    nerd.getData().put(RoleData.CONDEMNED_VOTE_LIST, new ArrayList<String>());
                                 }
                             }
 
@@ -285,6 +330,8 @@ public class start implements CommandExecutor {
         return true;
     }
 
+
+    // Yes, these three functions could absolutely be one. However, it's getting close to release and I don't want to do this
     void addRole(RoleType roleType, List<Nerd> roleSelectable) {
         Nerd selected = roleSelectable.get(rand.nextInt(roleSelectable.size()));
         Nerd selectedInList = plugin.getNerd(selected.getUuid());
@@ -294,6 +341,16 @@ public class start implements CommandExecutor {
     }
 
     Nerd addTwin(List<Nerd> roleSelectable) {
+        Nerd selected = roleSelectable.get(rand.nextInt(roleSelectable.size()));
+        Nerd selectedInList = plugin.getNerd(selected.getUuid());
+        selectedInList.setRole(RoleType.TWINS);
+
+        roleSelectable.removeIf(nerd -> nerd == selected);
+
+        return selectedInList;
+    }
+
+    Nerd addCondemned(List<Nerd> roleSelectable) {
         Nerd selected = roleSelectable.get(rand.nextInt(roleSelectable.size()));
         Nerd selectedInList = plugin.getNerd(selected.getUuid());
         selectedInList.setRole(RoleType.TWINS);

@@ -10,7 +10,8 @@ public enum RoleType {
     VICTIM,
     MIMIC,
     TWINS,
-    TRANSPORTER
+    TRANSPORTER,
+    CONDEMNED // I LOVE SCOPE CREEP
 }
 
 

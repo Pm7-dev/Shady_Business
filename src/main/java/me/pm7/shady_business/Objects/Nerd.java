@@ -1,8 +1,10 @@
 package me.pm7.shady_business.Objects;
 
 import me.pm7.shady_business.ScoreboardManager;
+import me.pm7.shady_business.ShadyBusiness;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,11 +16,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class Nerd implements ConfigurationSerializable {
+    private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
+    static FileConfiguration config = plugin.getConfig();
 
+        // I called this object "Nerd" Because "Player" is already a class in spigot and the word Townsperson sucks.
 
-        //I called this object "Nerd" Because "Player" is already a class in spigot and the word Townsperson sucks.
+    // also it's my crappy code and I can do what I want >:3
 
-    //also it's my crappy code and I can do what I want >:3
+            // random staggering!
 
     private UUID uuid;
     private String name;
@@ -52,6 +57,7 @@ public class Nerd implements ConfigurationSerializable {
     }
     public void removeLife() {
         this.lives--;
+        if(this.lives < 0) { this.lives = 0; }
         ScoreboardManager.UpdatePlayerScore(this);
 
         if(this.lives < 1) {
@@ -61,10 +67,13 @@ public class Nerd implements ConfigurationSerializable {
             // Gather the contents of the player's inventory and drop them
             Inventory inv = p.getInventory();
             Location loc = p.getLocation();
-            World world = loc.getWorld();
+            World world = p.getWorld();
             double power = 0.2D;
             for(ItemStack item : inv.getContents()) {
                 if(item != null) {
+                    if(item.getType() == Material.SPLASH_POTION && item.getItemMeta().getItemName().equals("Orb of Pondering")) {
+                        continue;
+                    }
                     double xVel = -power + (Math.random() * (power*2));
                     double zVel = -power + (Math.random() * (power*2));
                     System.out.println("xVel: " + xVel + " zVel: " + zVel);
@@ -77,6 +86,8 @@ public class Nerd implements ConfigurationSerializable {
             // die
             p.setGameMode(GameMode.SPECTATOR);
             p.sendTitle(ChatColor.RED + "You are out of lives!", "", 10, 70, 20);
+
+            config.set("someoneDeadLol", true);
         }
     }
     public int getLives() { return this.lives; }

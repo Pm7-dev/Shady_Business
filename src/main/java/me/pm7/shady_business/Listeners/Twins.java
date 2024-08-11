@@ -8,6 +8,8 @@ import net.minecraft.network.protocol.game.PacketPlayOutUpdateHealth;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.network.PlayerConnection;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
@@ -16,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.HashMap;
@@ -94,6 +97,7 @@ public class Twins implements Listener {
         }
 
         // Calculate the new health and save it to data
+        if(primeData.get(RoleData.TWIN_SHARED_HEALTH) == null) { return; }
         Double health = (Double) primeData.get(RoleData.TWIN_SHARED_HEALTH);
         health = health - damage;
         if(health < 0.0d) { health = 0.0d; }
@@ -108,6 +112,7 @@ public class Twins implements Listener {
             mimicPlayer = null;
         }
 
+        // at some point I got too lazy to make this a function
         if(damagedP == primePlayer) {
             if(secondPlayer != null && !secondPlayer.isDead()) {
                 sendHealthChangePacket(secondPlayer, damage, health);
@@ -188,9 +193,9 @@ public class Twins implements Listener {
         Double finalHealth = health;
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Double currentHealth = (Double) prime.getData().get(RoleData.TWIN_SHARED_HEALTH);
-            if(!primePlayer.isDead()) { primePlayer.setHealth(currentHealth); }
-            if(!secondPlayer.isDead()) { secondPlayer.setHealth(currentHealth); }
-            if(!mimicPlayer.isDead()) { mimicPlayer.setHealth(currentHealth); }
+            if(primePlayer != null && !primePlayer.isDead()) { primePlayer.setHealth(currentHealth); }
+            if(secondPlayer != null && !secondPlayer.isDead()) { secondPlayer.setHealth(currentHealth); }
+            if(mimicPlayer != null && !mimicPlayer.isDead()) { mimicPlayer.setHealth(currentHealth); }
 
             if(finalHealth == 0.0d) { primeData.put(RoleData.TWIN_SHARED_HEALTH, 30.0d); }
         }, 1L);
@@ -203,6 +208,25 @@ public class Twins implements Listener {
             PacketPlayOutUpdateHealth packetSecond = new PacketPlayOutUpdateHealth(health.floatValue(), entitySecond.gi().a, entitySecond.gi().b);
             PlayerConnection pcSecond = entitySecond.c;
             pcSecond.b(packetSecond);
+        }
+    }
+
+
+
+    // eat?
+    @EventHandler
+    public void onPlayerEat(PlayerItemConsumeEvent e) {
+        Nerd nerd = plugin.getNerd(e.getPlayer().getUniqueId());
+        if(nerd == null) { return; }
+        if(nerd.getRole() != RoleType.TWINS) { return; }
+        if(e.getItem().getType() == Material.GOLDEN_APPLE) {
+            e.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot eat these as a twin");
+            e.setCancelled(true);
+        }
+
+        if(e.getItem().getType() == Material.ENCHANTED_GOLDEN_APPLE) {
+            e.getPlayer().sendMessage(ChatColor.YELLOW + "Why would you even try this?");
+            e.setCancelled(true);
         }
     }
 }

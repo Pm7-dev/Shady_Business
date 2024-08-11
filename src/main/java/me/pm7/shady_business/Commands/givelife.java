@@ -19,8 +19,9 @@ public class givelife implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
         // I hate you if you run the command from console
+        // on second thought, death threat via console is not a good idea
         if(!(sender instanceof Player)) {
-            System.out.println("I am actually going to kill you.");
+            System.out.println("why");
             return true;
         }
         if(args.length == 1) {
