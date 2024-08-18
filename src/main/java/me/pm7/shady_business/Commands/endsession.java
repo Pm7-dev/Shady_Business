@@ -20,6 +20,7 @@ public class endsession implements CommandExecutor {
 
         // nvm I removed it
         // there was context I swear
+        // :p
 
         if(!commandSender.isOp()) { return true; }
 

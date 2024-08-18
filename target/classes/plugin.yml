@@ -9,7 +9,7 @@ commands:
   endsession:
     description: "OwO what's this?"
   info:
-    description: ">//w//<"
+    description: "returns info about the role of the player that ran the command."
     usage: /<command>
   givelife:
     description: "^w^"
@@ -18,4 +18,10 @@ commands:
     description: "only for admins. sets the life count of a player"
     usage: /<command> <player> <integer>
   test:
-    description: tests whatever the current test is. Should not ever be run.
+    description: "tests whatever the current test is. Should not ever be run."
+  startvote:
+    description: ">//w//<"
+    usage: /<command>
+  votemenu:
+    description: "for if somebody accidentally clears their chat"
+    usage: /<command>

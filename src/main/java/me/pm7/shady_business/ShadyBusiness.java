@@ -40,12 +40,15 @@ public final class ShadyBusiness extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Investigator(), this);
         getServer().getPluginManager().registerEvents(new Mimic(), this);
         getServer().getPluginManager().registerEvents(new Transporter(), this);
-        this.getCommand("start").setExecutor(new start());
+        getServer().getPluginManager().registerEvents(new vote(), this);
+        this.getCommand("startsession").setExecutor(new startsession());
         this.getCommand("endsession").setExecutor(new endsession());
         this.getCommand("setlife").setExecutor(new setlife());
         this.getCommand("info").setExecutor(new info());
         this.getCommand("givelife").setExecutor(new givelife());
         this.getCommand("test").setExecutor(new test());
+        this.getCommand("startvote").setExecutor(new vote());
+        this.getCommand("votemenu").setExecutor(new vote());
 
         System.out.println(":3 wistenyews and commands wegistewed >w<");
     }

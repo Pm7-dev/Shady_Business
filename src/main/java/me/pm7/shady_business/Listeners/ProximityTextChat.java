@@ -1,6 +1,5 @@
 package me.pm7.shady_business.Listeners;
 
-import me.pm7.shady_business.Objects.Nerd;
 import me.pm7.shady_business.ShadyBusiness;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

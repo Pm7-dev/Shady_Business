@@ -16,5 +16,4 @@ public enum RoleType {
 
 
 
-
 // vacant. devoid of anything.

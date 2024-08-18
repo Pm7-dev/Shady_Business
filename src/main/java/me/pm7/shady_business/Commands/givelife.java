@@ -11,7 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-// intellij keeps telling me to capitalize the L in givelife and I don't want to.
+// intellij keeps telling me to capitalize the L in givelife and I don't want to. >:(
 public class givelife implements CommandExecutor {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
 

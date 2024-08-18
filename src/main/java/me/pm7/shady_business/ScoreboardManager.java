@@ -37,8 +37,7 @@ public class ScoreboardManager implements Listener {
     public static void UpdatePlayerScore(Nerd nerd) {
         if(nerd == null) { System.out.println("nerd was null, cannot give them a name color :("); return; }
         Player p = Bukkit.getPlayer(nerd.getUuid());
-        if(!config.getBoolean("started") || p == null) { return; }
-
+        if(p == null) { return; }
 
         p.setScoreboard(board);
 

@@ -42,7 +42,10 @@ public class Mimic implements Listener {
         if(clicked == null) { return; }
         if(used) { return; }
 
-        nerd.setData(new HashMap<>()); //   ¯\_(ツ)_/¯ pretty sure mimics don't have any data
+        if(clicked.getLives() <= 1) {
+            p.sendMessage(ChatColor.RED + "That player is on red lol");
+            return;
+        }
 
         // play a funny sound
         p.playSound(p, Sound.ENTITY_BREEZE_CHARGE, 2, 0.75f);
@@ -172,6 +175,11 @@ public class Mimic implements Listener {
 
                     nerd.setRole(RoleType.TWINS);
                     break;
+                }
+
+                // I hate this
+                case CONDEMNED: {
+                    p.sendMessage(ChatColor.RED + "That was a condemned player. I am not going to code this.");
                 }
             }
         }, 18L);

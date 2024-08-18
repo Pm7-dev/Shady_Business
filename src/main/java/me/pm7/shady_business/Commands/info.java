@@ -79,6 +79,22 @@ public class info implements CommandExecutor {
                     p.sendMessage(ChatColor.AQUA + "You are the Transporter! You will be able to swap the locations of two players by right clicking them. Crouch and right click a player with an empty hand to select/deselect them, and do the same with a different player to swap their locations. You can use this power two times.");
                     break;
                 }
+                case CONDEMNED: {
+                    String other = "ERROR - OTHER CONDEMNED NOT FOUND";
+                    for(Nerd condemned : plugin.getNerds()) {
+                        if(condemned.getRole() == RoleType.CONDEMNED) {
+                            if(condemned != nerd) {
+                                other = condemned.getName();
+                                break;
+                            }
+                        }
+                    }
+
+                    p.sendTitle(ChatColor.DARK_RED + "Condemned", "", 10, 70, 20);
+                    p.sendMessage(ChatColor.DARK_RED + "You are one of the Condemned! When there are 30 minutes left in the session, players will be prompted to either vote for you, or " + other + " to explode. The rest of the players will be notified of this shortly. Good luck!");
+
+                }
+
             }
         }
 

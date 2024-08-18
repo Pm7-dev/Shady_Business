@@ -1,5 +1,6 @@
 package me.pm7.shady_business.Listeners;
 
+import me.pm7.shady_business.Commands.vote;
 import me.pm7.shady_business.Objects.Nerd;
 import me.pm7.shady_business.Objects.RoleData;
 import me.pm7.shady_business.Objects.RoleType;
@@ -8,15 +9,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class DeathListener implements Listener {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
@@ -36,7 +35,7 @@ public class DeathListener implements Listener {
         // Get the dead nerd
         Player p = e.getEntity();
         Nerd nerd = plugin.getNerd(p.getUniqueId());
-        if(nerd == null) { System.out.println("errror, nerd was null in death"); return; }
+        if(nerd == null) { System.out.println("error, nerd was null in death"); return; }
 
         // Break the twin health link if one of them goes to red
         if(nerd.getRole() == RoleType.TWINS && nerd.getLives() - 1 <= 1) {
@@ -97,6 +96,30 @@ public class DeathListener implements Listener {
             nerd.removeLife();
         }
 
+        // scope creep
+        if(nerd.getRole() == RoleType.CONDEMNED && nerd.getLives() <3) { // <3
+
+            if(!vote.exploding) { // in vote class
+
+                Bukkit.broadcastMessage(ChatColor.YELLOW + "One of the Condemned has dropped to yellow! The voting is canceled.");
+                nerd.setRole(RoleType.VILLAGER);
+                nerd.setData(new HashMap<>());
+
+                Nerd other = null;
+                for (Nerd nerd1 : plugin.getNerds()) {
+                    if (nerd1.getRole() == RoleType.CONDEMNED && nerd1 != nerd) {
+                        other = nerd1;
+                        break;
+                    }
+                }
+                if (other != null) {
+                    other.setRole(RoleType.VILLAGER);
+                    other.setData(new HashMap<>());
+                }
+
+            }
+        }
+
         //fjjjjjjjjjjkl gonk
         plugin.saveData();
 
@@ -110,6 +133,7 @@ public class DeathListener implements Listener {
                 words.set(i, Bukkit.getPlayer(words.get(i)).getDisplayName());
             }
         }
+        e.setDeathMessage(String.join(" ", words));
 
         // Sound effects
         if(nerd.getLives() < 1) {

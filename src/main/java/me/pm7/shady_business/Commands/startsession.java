@@ -21,10 +21,11 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-public class start implements CommandExecutor {
+public class startsession implements CommandExecutor {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
     static  FileConfiguration config = plugin.getConfig();
     Random rand = new Random();
+    boolean cooldown = false;
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -67,6 +68,7 @@ public class start implements CommandExecutor {
                 Bukkit.broadcastMessage(ChatColor.RED + "Session Started!");
 
                 for(Nerd nerd : nerds) {
+                    ScoreboardManager.UpdatePlayerScore(nerd);
 
                     if(nerd.getRole() == RoleType.VILLAGER) { nerd.setHadRoleLastSession(false); }
                     else { nerd.setHadRoleLastSession(true); }
@@ -98,7 +100,7 @@ public class start implements CommandExecutor {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
                     // add one to the session count here, for some reason
-                    int sessions = config.getInt("session");
+                    int sessions = config.getInt("sessions");
                     sessions++;
                     config.set("sessions", sessions);
 
@@ -130,15 +132,15 @@ public class start implements CommandExecutor {
                     if(!roleSelectable.isEmpty() && sessions > 1) {
                         List<Nerd> darkGreen = new ArrayList<>();
                         for(Nerd nerd : roleSelectable) {
-                            if(nerd.getLives() == 4) {
+                            if(nerd.getLives() >= 4) {
                                 darkGreen.add(nerd);
                             }
                         }
                         if(new HashSet<>(darkGreen).size() > 1) {
                             Nerd n1 = addCondemned(darkGreen);
-                            roleSelectable.removeIf(nerd -> nerd == n1);
+                            roleSelectable.removeIf(nerd -> nerd.getUuid() == n1.getUuid());
                             Nerd n2 = addCondemned(darkGreen);
-                            roleSelectable.removeIf(nerd -> nerd == n2);
+                            roleSelectable.removeIf(nerd -> nerd.getUuid() == n2.getUuid());
                         } else {
                             // If it cannot be done with dark greens, continue with light greens
                             List<Nerd> green = new ArrayList<>();
@@ -149,9 +151,9 @@ public class start implements CommandExecutor {
                             }
                             if(new HashSet<>(green).size() > 1) {
                                 Nerd n1 = addCondemned(green);
-                                roleSelectable.removeIf(nerd -> nerd == n1);
+                                roleSelectable.removeIf(nerd -> nerd.getUuid() == n1.getUuid());
                                 Nerd n2 = addCondemned(green);
-                                roleSelectable.removeIf(nerd -> nerd == n2);
+                                roleSelectable.removeIf(nerd -> nerd.getUuid() == n2.getUuid());
                             }
                         }
                     }
@@ -197,6 +199,9 @@ public class start implements CommandExecutor {
 
                             p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 1.0f);
                             p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 2.0f);
+
+                            // scope creep
+                            nerd.getData().put(RoleData.VOTED, false);
 
                             switch (nerd.getRole()) {
                                 case VILLAGER: {
@@ -287,7 +292,7 @@ public class start implements CommandExecutor {
                                     }
 
                                     twinPrime.getData().put(RoleData.TWIN_SHARED_HEALTH, 30.0d);
-                                    otherTwin.getData().put(RoleData.TWIN_SHARED_HEALTH, -3.621d); // D:
+                                    otherTwin.getData().put(RoleData.TWIN_SHARED_HEALTH, -3.621d); // 3:
 
                                     twinPrime.getData().put(RoleData.TWIN_MIMIC_NAME, null); // Only set the name in prime twin because erualsgkhpsaldfj
                                     otherTwin.getData().put(RoleData.TWIN_MIMIC_NAME, null);
@@ -321,11 +326,33 @@ public class start implements CommandExecutor {
 
                             plugin.saveData();
                         }
+
+                        // announce the condemned
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                            Nerd cond1 = null;
+                            Nerd cond2 = null;
+                            for(Nerd cond : plugin.getNerds()) {
+                                if(cond.getRole() == RoleType.CONDEMNED) {
+                                    if(cond1 == null) { cond1 = cond; }
+                                    else { cond2 = cond; break; }
+                                }
+                            }
+                            if(cond1 == null || cond2 == null) {
+                                System.out.println("Very bad error just happened with dealing cnndemenred voting. ! (but in the ending bvote this time)");
+                                return;
+                            }
+                            Bukkit.broadcastMessage(ChatColor.YELLOW + "The condemned players for this session are " + cond1.getName() + ", and " + cond2.getName());
+                        }, 2400L); // 2 mins
+
+
                     }, 100L); //100 for 5 seconds
                 }, 20L); //600 for 30 seconds
             }, 60L); //6000 for 5 minutes
         } else if(commandSender.getName().equals("Piffin380")) {
-
+            if(!cooldown) {
+                cooldown = true;
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> cooldown = false, 2400);
+            } else { commandSender.sendMessage(ChatColor.RED + "later."); }
         }
         return true;
     }
@@ -353,7 +380,7 @@ public class start implements CommandExecutor {
     Nerd addCondemned(List<Nerd> roleSelectable) {
         Nerd selected = roleSelectable.get(rand.nextInt(roleSelectable.size()));
         Nerd selectedInList = plugin.getNerd(selected.getUuid());
-        selectedInList.setRole(RoleType.TWINS);
+        selectedInList.setRole(RoleType.CONDEMNED);
 
         roleSelectable.removeIf(nerd -> nerd == selected);
 

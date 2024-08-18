@@ -1,4 +1,5 @@
+session: 0
 textChatFade: 68
 textChatCut: 80
 started: false
-someoneDeadLol: falsme
+someoneDeadLol: false

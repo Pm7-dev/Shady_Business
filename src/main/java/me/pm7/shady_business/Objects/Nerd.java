@@ -70,7 +70,7 @@ public class Nerd implements ConfigurationSerializable {
             World world = p.getWorld();
             double power = 0.2D;
             for(ItemStack item : inv.getContents()) {
-                if(item != null) {
+                if(item != null && item.getItemMeta() != null) {
                     if(item.getType() == Material.SPLASH_POTION && item.getItemMeta().getItemName().equals("Orb of Pondering")) {
                         continue;
                     }

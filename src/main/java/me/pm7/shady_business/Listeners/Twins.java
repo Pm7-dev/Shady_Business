@@ -1,5 +1,6 @@
 package me.pm7.shady_business.Listeners;
 
+import me.pm7.shady_business.Commands.vote;
 import me.pm7.shady_business.Objects.Nerd;
 import me.pm7.shady_business.Objects.RoleData;
 import me.pm7.shady_business.Objects.RoleType;
@@ -30,6 +31,10 @@ public class Twins implements Listener {
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent e) {
+
+        // there is no reason this should be here but I am far too lazy to get this to work
+        if(vote.exploding && (e.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || e.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION)) {e.setCancelled(true); return; }
+
         if(!config.getBoolean("started")) {return;}
         if(!(e.getEntity() instanceof Player p)) { return; }
         Nerd nerd = plugin.getNerd(p.getUniqueId());

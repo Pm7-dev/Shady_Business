@@ -4,13 +4,11 @@ import me.pm7.shady_business.Objects.Nerd;
 import me.pm7.shady_business.Objects.RoleType;
 import me.pm7.shady_business.ShadyBusiness;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class JoinListener implements Listener {
