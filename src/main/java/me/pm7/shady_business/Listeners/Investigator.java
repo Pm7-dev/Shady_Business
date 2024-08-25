@@ -20,6 +20,8 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -59,24 +61,31 @@ public class Investigator implements Listener {
         if(nerd == null) { return; }
 
         // Get the actual investigator
-        Nerd investigator = null;
+        List<Nerd> investigators = new ArrayList<>();
         for (Nerd i : plugin.getNerds()) {
             if(i.getRole() == RoleType.INVESTIGATOR && i.getLives() > 1) {
-                investigator = i;
+                investigators.add(i);
                 break;
             }
         }
-        if(investigator == null) { return; }
-        Player p = Bukkit.getPlayer(investigator.getUuid());
-        if(p == null) { return; }
+        if(investigators.isEmpty()) { return; }
+        for(Nerd investigator : investigators) {
+            Player p = Bukkit.getPlayer(investigator.getUuid());
+            if (p == null) {
+                return;
+            }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            p.playSound(p, Sound.ENTITY_SHULKER_BULLET_HIT, 1, 0.65f);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                p.playSound(p, Sound.ENTITY_SHULKER_BULLET_HIT, 500, 0.65f);
 
-            // Let the investigator know if they found the guy
-            if(nerd.getRole() == RoleType.BOOGEYMAN) { p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "■ Boogeyman! ■");}
-            else { p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "■ Not A Boogeyman! ■"); }
-        }, random.nextInt(8) + 2);
+                // Let the investigator know if they found the guy
+                if (nerd.getRole() == RoleType.BOOGEYMAN) {
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "■ Boogeyman! ■");
+                } else {
+                    p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "■ Not A Boogeyman! ■");
+                }
+            }, random.nextInt(8) + 2);
+        }
     }
 
     @EventHandler

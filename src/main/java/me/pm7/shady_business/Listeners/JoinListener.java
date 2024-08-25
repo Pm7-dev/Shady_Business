@@ -1,6 +1,8 @@
 package me.pm7.shady_business.Listeners;
 
+import it.unimi.dsi.fastutil.Hash;
 import me.pm7.shady_business.Objects.Nerd;
+import me.pm7.shady_business.Objects.RoleData;
 import me.pm7.shady_business.Objects.RoleType;
 import me.pm7.shady_business.ShadyBusiness;
 import org.bukkit.attribute.Attribute;
@@ -25,7 +27,10 @@ public class JoinListener implements Listener {
                 newNerd.setName(p.getName());
                 newNerd.setLives(4);
                 newNerd.setRole(RoleType.VILLAGER);
-                newNerd.setData(new HashMap<>());
+
+                HashMap<RoleData, Object> data = new HashMap<>();
+                data.put(RoleData.VOTED, false);
+                newNerd.setData(data);
 
                 plugin.getNerds().add(newNerd);
             } else {

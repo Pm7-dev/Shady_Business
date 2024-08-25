@@ -32,23 +32,28 @@ public final class ShadyBusiness extends JavaPlugin {
     }
 
     private void registerListeners() {
+        // something about saving data to config idk i forgor
         ConfigurationSerialization.registerClass(Nerd.class);
-        getServer().getPluginManager().registerEvents(new Twins(), this);
+
+        // organization
+        getServer().getPluginManager().registerEvents(new ProximityTextChat(), this);
+        getServer().getPluginManager().registerEvents(new ScoreboardManager(), this);
         getServer().getPluginManager().registerEvents(new DeathListener(), this);
         getServer().getPluginManager().registerEvents(new JoinListener(), this);
-        getServer().getPluginManager().registerEvents(new ScoreboardManager(), this);
         getServer().getPluginManager().registerEvents(new Investigator(), this);
-        getServer().getPluginManager().registerEvents(new Mimic(), this);
         getServer().getPluginManager().registerEvents(new Transporter(), this);
+        getServer().getPluginManager().registerEvents(new Twins(), this);
+        getServer().getPluginManager().registerEvents(new Mimic(), this);
         getServer().getPluginManager().registerEvents(new vote(), this);
         this.getCommand("startsession").setExecutor(new startsession());
         this.getCommand("endsession").setExecutor(new endsession());
-        this.getCommand("setlife").setExecutor(new setlife());
-        this.getCommand("info").setExecutor(new info());
         this.getCommand("givelife").setExecutor(new givelife());
-        this.getCommand("test").setExecutor(new test());
+        this.getCommand("setlife").setExecutor(new setlife());
         this.getCommand("startvote").setExecutor(new vote());
         this.getCommand("votemenu").setExecutor(new vote());
+        this.getCommand("info").setExecutor(new info());
+        this.getCommand("test").setExecutor(new test());
+        this.getCommand("cure").setExecutor(new cure());
 
         System.out.println(":3 wistenyews and commands wegistewed >w<");
     }

@@ -44,7 +44,10 @@ public class startsession implements CommandExecutor {
                         nerd.setLives(4);
                         nerd.setHadRoleLastSession(false);
                         nerd.setRole(RoleType.NONE);
-                        nerd.setData(new HashMap<>());
+
+                        HashMap<RoleData, Object> data = new HashMap<>();
+                        data.put(RoleData.VOTED, false);
+                        nerd.setData(data);
 
                         nerds.add(nerd);
 
@@ -74,7 +77,10 @@ public class startsession implements CommandExecutor {
                     else { nerd.setHadRoleLastSession(true); }
 
                     nerd.setRole(RoleType.VILLAGER);
-                    nerd.setData(new HashMap<>());
+
+                    HashMap<RoleData, Object> data = new HashMap<>();
+                    data.put(RoleData.VOTED, false);
+                    nerd.setData(data);
 
                     Player p = Bukkit.getPlayer(nerd.getUuid());
                     if(p != null) {
@@ -189,7 +195,7 @@ public class startsession implements CommandExecutor {
                     //sou[p
                     for(Player p : Bukkit.getOnlinePlayers()) {
                         p.sendTitle(ChatColor.GREEN + "Your role is...", "", 10, 100, 20);
-                        p.playSound(p, Sound.BLOCK_VAULT_ACTIVATE, 1, 0.5f);
+                        p.playSound(p, Sound.BLOCK_VAULT_ACTIVATE, 500, 0.5f);
                     }
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -197,8 +203,8 @@ public class startsession implements CommandExecutor {
                             Player p = Bukkit.getPlayer(nerd.getUuid());
                             if(p==null) { continue; }
 
-                            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 1.0f);
-                            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 2.0f);
+                            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 500, 1.0f);
+                            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 500, 2.0f);
 
                             // scope creep
                             nerd.getData().put(RoleData.VOTED, false);
@@ -261,8 +267,6 @@ public class startsession implements CommandExecutor {
                                 case VICTIM: {
                                     p.sendTitle(ChatColor.GREEN + "Victim", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.GREEN + "You are the Victim! Your goal is to get killed by a boogeyman. If you are killed, you will gain a life instead of losing a life, and the boogeyman will not be cured.");
-
-                                    nerd.getData().put(RoleData.VICTIM_COMPLETED, false);
                                     break;
                                 }
                                 case MIMIC: {
@@ -337,10 +341,7 @@ public class startsession implements CommandExecutor {
                                     else { cond2 = cond; break; }
                                 }
                             }
-                            if(cond1 == null || cond2 == null) {
-                                System.out.println("Very bad error just happened with dealing cnndemenred voting. ! (but in the ending bvote this time)");
-                                return;
-                            }
+                            if(cond1 == null || cond2 == null) { return; }
                             Bukkit.broadcastMessage(ChatColor.YELLOW + "The condemned players for this session are " + cond1.getName() + ", and " + cond2.getName());
                         }, 2400L); // 2 mins
 
@@ -348,11 +349,24 @@ public class startsession implements CommandExecutor {
                     }, 100L); //100 for 5 seconds
                 }, 20L); //600 for 30 seconds
             }, 60L); //6000 for 5 minutes
+
+        // surely he's gonna do it.
         } else if(commandSender.getName().equals("Piffin380")) {
             if(!cooldown) {
                 cooldown = true;
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> cooldown = false, 2400);
-            } else { commandSender.sendMessage(ChatColor.RED + "later."); }
+
+                Player p = (Player) commandSender;
+                Location haha = p.getLocation();
+                haha.add(0, 500, 0);
+
+                // spook
+                p.playSound(haha, "death.other", 9999999, 1);
+                p.sendTitle(ChatColor.BLUE + "Alright, I'm Piffin", "", 10, 70, 20);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> cooldown = false, 1400);
+            } else {
+                commandSender.sendMessage(ChatColor.RED + "later.");
+            }
         }
         return true;
     }

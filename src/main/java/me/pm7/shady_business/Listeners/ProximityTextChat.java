@@ -37,7 +37,7 @@ public class ProximityTextChat implements Listener {
         }
 
         String message = e.getMessage();
-        if(!message.startsWith(".")) {e.setMessage(message.substring(1)); return;}
+        if(!message.startsWith(".")) { return; }
         e.setCancelled(true);
 
         Location senderLocation = p.getLocation();
@@ -46,7 +46,7 @@ public class ProximityTextChat implements Listener {
         Double sZ = senderLocation.getZ();
 
         for(Player receiver : Bukkit.getOnlinePlayers()) {
-            message = e.getMessage();
+            message = message.substring(1);
 
             Location receiverLocation = receiver.getLocation();
             Double rX = receiverLocation.getX();

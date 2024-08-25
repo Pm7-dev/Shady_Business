@@ -3,25 +3,29 @@ version: '${project.version}'
 main: me.pm7.shady_business.ShadyBusiness
 api-version: '1.21'
 commands:
-  start:
+  startsession:
     description: "UwU~"
     usage: /<command>
   endsession:
     description: "OwO what's this?"
-  info:
-    description: "returns info about the role of the player that ran the command."
-    usage: /<command>
   givelife:
     description: "^w^"
     usage: /<command>
-  setlife:
-    description: "only for admins. sets the life count of a player"
-    usage: /<command> <player> <integer>
-  test:
-    description: "tests whatever the current test is. Should not ever be run."
+  cure:
+    description: "nya :3"
+    usage: /<command>
   startvote:
     description: ">//w//<"
     usage: /<command>
+  info:
+    description: "qwq"
+    usage: /<command>
   votemenu:
-    description: "for if somebody accidentally clears their chat"
+    description: "Piffin is the only person that has to use this command"
+    usage: /<command>
+  setlife:
+    description: "bwomp"
+    usage: /<command> <player> <integer>
+  test:
+    description: "o3o"
     usage: /<command>

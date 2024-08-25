@@ -29,9 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.messaging.ChannelNameTooLongException;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -81,7 +79,7 @@ public class vote implements CommandExecutor, Listener {
                     p.sendMessage(ChatColor.YELLOW + "Condemned player voting has started!");
                 }
 
-                p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, 0.5f);
+                p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, 0.5f);
             }
 
             // After 8 minutes, if not everyone has voted, force the voting menu onto their screen
@@ -124,7 +122,7 @@ public class vote implements CommandExecutor, Listener {
                     Player p = Bukkit.getPlayer(nerd.getUuid());
                     if(p == null) { continue; }
 
-                    p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, 0.5f);
+                    p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, 0.5f);
                     p.sendMessage(ChatColor.RED + "You will now be forced to vote. If you do not select a player within the next 4 minutes you also get to explode.");
 
                     Inventory inv = Bukkit.createInventory(p, 9, "Which player should explode?");
@@ -141,9 +139,9 @@ public class vote implements CommandExecutor, Listener {
                     voting = false;
                     endVote();
 
-                }, 500L); // 4800
+                }, 1200L); // 4800
                 
-            }, 500L); // 9600
+            }, 1200L); // 9600
 
         } else if (command.getName().equalsIgnoreCase("votemenu")) {
             if(!voting) { return true; }
@@ -192,7 +190,7 @@ public class vote implements CommandExecutor, Listener {
     public void onInventoryClick(InventoryClickEvent e) {
 
         if(!e.getView().getTitle().equals("Which player should explode?") || e.getInventory().getSize() != 9) { return; }
-        if(!voting) { e.getWhoClicked().closeInventory(); }
+        if(!voting) { e.getWhoClicked().closeInventory(); return; }
 
         e.setCancelled(true);
         if(e.getSlot() != 2 && e.getSlot() != 6) { return; }
@@ -210,7 +208,9 @@ public class vote implements CommandExecutor, Listener {
         data.add(e.getWhoClicked().getName());
 
         nerd.getData().put(RoleData.VOTED, true);
-        e.getWhoClicked().sendMessage(ChatColor.GREEN + "Vote success!");
+        Player whoClicked = (Player) e.getWhoClicked();
+        whoClicked.sendMessage(ChatColor.GREEN + "Vote submitted successfully!");
+        whoClicked.playSound(whoClicked, Sound.BLOCK_AMETHYST_BLOCK_STEP, 500, 2.0f);
 
 
         e.getWhoClicked().closeInventory();
@@ -218,15 +218,22 @@ public class vote implements CommandExecutor, Listener {
         // check if voting can be ended
         boolean finished = true;
         for (Player p : Bukkit.getOnlinePlayers()) {
-            Nerd pn = plugin.getNerd(p.getName());
+
+            Nerd pn = plugin.getNerd(p.getUniqueId());
             if(pn == null) { continue; }
-            if(nerd.getData().get(RoleData.VOTED) == null || !((boolean) nerd.getData().get(RoleData.VOTED))) {
+            HashMap<RoleData, Object> nd = pn.getData();
+
+            if(pn.getRole() == RoleType.CONDEMNED) { continue; }
+
+            if(!((boolean) nd.get(RoleData.VOTED))) {
                 finished = false;
+                break;
             }
         }
+
         if(finished) {
-            endVote();
             voting = false;
+            endVote();
         }
 
     }
@@ -260,7 +267,7 @@ public class vote implements CommandExecutor, Listener {
     void endVote() {
         Bukkit.broadcastMessage(ChatColor.YELLOW + "The voting period has now ended, and the votes will be counted shortly.");
         for(Player p : Bukkit.getOnlinePlayers()) {
-            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, 0.5f);
+            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, 0.5f);
         }
 
         // get both condemned
@@ -283,8 +290,8 @@ public class vote implements CommandExecutor, Listener {
         runnable = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 
             // "anticipation mode" is when the plugin will alternate names in the chat. when anticipation mode is over, it will continue printing the winner's votes until it is out
-            final List<String> votesOne = (List<String>) n1.getData().get(RoleData.CONDEMNED_VOTE_LIST);
-            final List<String> votesTwo = (List<String>) n2.getData().get(RoleData.CONDEMNED_VOTE_LIST);
+            final List<String> votesOne =  Arrays.asList("haii", "wan", "tu", "mute", "mute", "mute", "mute", "mute" ); //(List<String>) n1.getData().get(RoleData.CONDEMNED_VOTE_LIST);
+            final List<String> votesTwo = Arrays.asList("haii", "wan", "tu", "mute", "mute", "mute", "mute", "mute", "mute", "mute", "mute", "mute", "mute" );//(List<String>) n2.getData().get(RoleData.CONDEMNED_VOTE_LIST);
             if(!anticipationOver) {
 
                 // only run this on every other tick
@@ -297,22 +304,28 @@ public class vote implements CommandExecutor, Listener {
                     if(index < votesOne.size()) {
 
                         // if there is, broadcast a vote for this player, and then run the 12 tick wait to check for the second player
+                        System.out.println("index : " + index);
+
                         Bukkit.broadcastMessage(ChatColor.YELLOW + n1.getName() + "!");
-                        for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, ((float) index * 0.075f) + 0.5f); } //play sound
+                        for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, ((float) index * 0.075f) + 0.5f); } //play sound
                         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
                             // check if there is a vote for this index in the second condemned vote list
                             if(index < votesTwo.size()) {
 
                                 // if there is, broadcast a vote for this player, and do nothing because the loop will run again
+                                System.out.println("index : " + index);
+
                                 Bukkit.broadcastMessage(ChatColor.BLUE + n2.getName() + "!");
-                                for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, ((float) index * 0.075f) + 0.5f); } //play sound
+                                for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, ((float) index * 0.075f) + 0.5f); } //play sound
 
                             } else {
 
                                 // if there is not, we know that the first player must have more votes, so broadcast one more of them and exit the anticipation mode
+                                System.out.println("index : " + index);
+
                                 Bukkit.broadcastMessage(ChatColor.YELLOW + n1.getName() + "!");
-                                for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, ((float) index * 0.075f) + 0.5f); } //play sound
+                                for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, ((float) index * 0.075f) + 0.5f); } //play sound
 
                                 tick = index;
                                 anticipationOver = true;
@@ -325,8 +338,10 @@ public class vote implements CommandExecutor, Listener {
                         if(index < votesTwo.size()) {
 
                             // if there is, we know that the second player must have more votes, so broadcast one more of them and exit the anticipation mode
+                            System.out.println("index : " + index);
+
                             Bukkit.broadcastMessage(ChatColor.BLUE + n2.getName() + "!");
-                            for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, ((float) index * 0.075f) + 0.5f); } //play sound
+                            for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, ((float) index * 0.075f) + 0.5f); } //play sound
 
                             tick = index;
                             anticipationOver = true;
@@ -348,8 +363,10 @@ public class vote implements CommandExecutor, Listener {
                     if(tick < votesOne.size()) {
 
                         // while still ticking, play the same note instead of upwards ones or something
-                        Bukkit.broadcastMessage(ChatColor.BLUE + n1.getName() + "!");
-                        for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, ((float) (votesTwo.size()-1) * 0.075f) + 0.5f); } //play sound
+                        System.out.println("index : " + tick);
+
+                        Bukkit.broadcastMessage(ChatColor.YELLOW + n1.getName() + "!");
+                        for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, ((float) (votesTwo.size()-1) * 0.075f) + 0.5f); } //play sound
 
                     } else {
 
@@ -361,8 +378,10 @@ public class vote implements CommandExecutor, Listener {
                     if(tick < votesTwo.size()) {
 
                         // while still ticking, play the same note instead of upwards ones or something
+                        System.out.println("index : " + tick);
+
                         Bukkit.broadcastMessage(ChatColor.BLUE + n2.getName() + "!");
-                        for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, ((float) (votesOne.size()-1) * 0.075f) + 0.5f); } //play sound
+                        for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, ((float) (votesOne.size()-1) * 0.075f) + 0.5f); } //play sound
 
                     } else {
 
@@ -387,7 +406,7 @@ public class vote implements CommandExecutor, Listener {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Bukkit.broadcastMessage(ChatColor.RED + "Bye :D");
-            for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, pitch); } //play sound
+            for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, pitch); } //play sound
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 Player p = Bukkit.getPlayer(nerd.getUuid());
                 if(p == null) {
@@ -408,18 +427,19 @@ public class vote implements CommandExecutor, Listener {
     }
 
     void tieThingsOff(Nerd n1, Nerd n2, float pitch) {
+
         tick = 0;
         anticipationOver = false;
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             Bukkit.broadcastMessage(ChatColor.YELLOW + "Oh, there's a tie. I see.");
-            for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, pitch); } //play sound
+            for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, pitch); } //play sound
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 Bukkit.broadcastMessage(ChatColor.BLUE + "Well, one of you still has to die. Hm...");
-                for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, pitch); } //play sound
+                for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, pitch); } //play sound
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                     Bukkit.broadcastMessage(ChatColor.YELLOW + "Oh well, I'll just pick one");
-                    for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 2, pitch); } //play sound
+                    for(Player p : Bukkit.getOnlinePlayers()) { p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, pitch); } //play sound
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
                         Nerd selected;

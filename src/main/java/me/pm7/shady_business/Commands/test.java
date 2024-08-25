@@ -34,19 +34,21 @@ public class test implements CommandExecutor {
     private static final ShadyBusiness plugin = ShadyBusiness.getPlugin();
 
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        Player pm7 = Bukkit.getPlayer("_Pm7");
-        Player pm8 = Bukkit.getPlayer("_Pm8");
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        Player p = Bukkit.getPlayer(args[0]);
+        if(p == null) {
+            sender.sendMessage("error, player does not exist");
+            return true;
+        }
 
-        Nerd n7 = plugin.getNerd(pm7.getUniqueId());
-        Nerd n8 = plugin.getNerd(pm8.getUniqueId());
+        Nerd nerd = plugin.getNerd(p.getUniqueId());
+        if(nerd == null) {
+            sender.sendMessage("error, nerd does not exist");
+            return true;
+        }
 
-        n7.setRole(RoleType.CONDEMNED);
-        n8.setRole(RoleType.CONDEMNED);
-
-        n7.getData().put(RoleData.CONDEMNED_VOTE_LIST, new LinkedList<>(Arrays.asList("UwU", "Abdron", "Udtorn", ">w<", ">w<", ">w<", ">w<", ">w<", ">w<", ">w<")));
-        n8.getData().put(RoleData.CONDEMNED_VOTE_LIST, new LinkedList<>(Arrays.asList("a", "ab", "an", "OwO", ",a", "ga", "wa", "wa", "wa", "wa", "wa", "wa", "wa", "wa", "wa", "wa")));
-
+        sender.sendMessage(nerd.toString());
+        System.out.println(nerd);
 
         return true;
     }

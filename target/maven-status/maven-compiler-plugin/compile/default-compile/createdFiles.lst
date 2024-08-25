@@ -1,16 +1,18 @@
 me\pm7\shady_business\Commands\info$1.class
 me\pm7\shady_business\Commands\endsession.class
 me\pm7\shady_business\Commands\info.class
+me\pm7\shady_business\Commands\startsession$1.class
 me\pm7\shady_business\Listeners\ProximityTextChat.class
 me\pm7\shady_business\Listeners\Investigator.class
 me\pm7\shady_business\Objects\Strawberry.class
 me\pm7\shady_business\Commands\setlife.class
+me\pm7\shady_business\Commands\cure.class
 me\pm7\shady_business\Commands\givelife.class
 me\pm7\shady_business\Listeners\Mimic.class
 me\pm7\shady_business\Objects\RoleData.class
+me\pm7\shady_business\Commands\startsession.class
 me\pm7\shady_business\Listeners\DeathListener.class
 me\pm7\shady_business\Listeners\JoinListener.class
-me\pm7\shady_business\Commands\start.class
 me\pm7\shady_business\ScoreboardManager.class
 me\pm7\shady_business\ShadyBusiness.class
 me\pm7\shady_business\Commands\test.class
@@ -20,4 +22,3 @@ me\pm7\shady_business\Listeners\Twins.class
 me\pm7\shady_business\Objects\Nerd.class
 me\pm7\shady_business\Objects\RoleType.class
 me\pm7\shady_business\Commands\vote.class
-me\pm7\shady_business\Commands\start$1.class

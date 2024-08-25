@@ -32,6 +32,16 @@ public class DeathListener implements Listener {
         deaths.add(e.getDeathMessage());
         config.set("deathList", deaths);
 
+        List<String> names = new ArrayList<>();
+        for(Player i: Bukkit.getOnlinePlayers()) {names.add(i.getName());}
+        List<String> words = new ArrayList<>(Arrays.asList(e.getDeathMessage().split(" ")));
+        for(int i=0; i<words.size(); i++) {
+            if(names.contains(words.get(i))) {
+                words.set(i, Bukkit.getPlayer(words.get(i)).getDisplayName());
+            }
+        }
+        e.setDeathMessage(String.join(" ", words));
+
         // Get the dead nerd
         Player p = e.getEntity();
         Nerd nerd = plugin.getNerd(p.getUniqueId());
@@ -46,7 +56,7 @@ public class DeathListener implements Listener {
                     if(np != null) {
                         np.sendMessage(ChatColor.YELLOW + nerd.getName() + " has died, and only has one life left! Your health link is now broken.");
                         np.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20.0d);
-                        np.setHealth(20.0d);
+                        //np.setHealth(20.0d);
                     }
                 }
             }
@@ -59,35 +69,35 @@ public class DeathListener implements Listener {
         if(pk != null) {
             Nerd killer = plugin.getNerd(pk.getUniqueId());
             if(killer != null) {
-                if (killer.getRole() == RoleType.BOOGEYMAN && killer.getLives() > 1) {
-                    if(nerd.getLives() > 1) {
-                        if (nerd.getRole() == RoleType.VICTIM && !(boolean) nerd.getData().get(RoleData.VICTIM_COMPLETED)) {
-                            pk.sendTitle(ChatColor.RED + "You've been tricked!'", "", 10, 70, 20);
-                            pk.sendMessage(ChatColor.RED + "The player you killed was a victim");
-                            nerd.getData().put(RoleData.VICTIM_COMPLETED, true);
-                            nerd.addLife();
-                            p.sendTitle(ChatColor.GREEN + "You gained a life!", "", 10, 70, 20);
+                HashMap<RoleData, Object> killerData = killer.getData();
 
-                            victimthing = true;
+                if (killer.getRole() == RoleType.BOOGEYMAN && killer.getLives() > 1 && nerd.getLives() > 1) {
+                    if (nerd.getRole() == RoleType.VICTIM) {
+                        pk.sendTitle(ChatColor.RED + "You've been tricked!", "", 10, 70, 20);
+                        pk.sendMessage(ChatColor.RED + "The player you killed was a victim");
+                        nerd.addLife();
+                        p.sendTitle(ChatColor.GREEN + "You gained a life!", "", 10, 70, 20);
 
-                        } else if (nerd.getRole() != RoleType.BOOGEYMAN) {
-                            pk.sendTitle(ChatColor.GREEN + "You have been cured!", "", 10, 70, 20);
-                            nerd.getData().put(RoleData.BOOGEYMAN_CURED, true);
+                        nerd.setRole(RoleType.VILLAGER);
 
-                            for(Nerd nerd1 : plugin.getNerds()) {
-                                if(killer == nerd1) { continue; }
-                                if(nerd1.getRole() == RoleType.BOOGEYMAN) {
-                                    Player boog = Bukkit.getPlayer(nerd1.getUuid());
-                                    if(boog != null) {
-                                        boog.sendMessage(ChatColor.RED + pk.getName() + " has been cured!");
-                                    }
+                        victimthing = true;
+
+                    } else if (nerd.getRole() != RoleType.BOOGEYMAN &&  !((boolean) killerData.get(RoleData.BOOGEYMAN_CURED))) {
+                        pk.sendTitle(ChatColor.GREEN + "You have been cured!", "", 10, 70, 20);
+                        killerData.put(RoleData.BOOGEYMAN_CURED, true);
+
+                        for(Nerd b : plugin.getNerds()) {
+                            if(b.getRole() == RoleType.BOOGEYMAN) {
+                                Player boog = Bukkit.getPlayer(b.getUuid());
+                                if(boog != null) {
+                                    boog.sendMessage(e.getDeathMessage());
+                                    boog.sendMessage(ChatColor.RED + pk.getName() + " has been cured!");
                                 }
                             }
-
                         }
-
-                        e.setDeathMessage("");
                     }
+                    p.sendMessage(e.getDeathMessage());
+                    e.setDeathMessage("");
                 }
             }
         }
@@ -125,22 +135,14 @@ public class DeathListener implements Listener {
 
         // Death message generation
         if(Objects.requireNonNull(e.getDeathMessage()).isBlank()) { return; }
-        List<String> names = new ArrayList<>();
-        for(Player i: Bukkit.getOnlinePlayers()) {names.add(i.getName());}
-        List<String> words = new ArrayList<>(Arrays.asList(e.getDeathMessage().split(" ")));
-        for(int i=0; i<words.size(); i++) {
-            if(names.contains(words.get(i))) {
-                words.set(i, Bukkit.getPlayer(words.get(i)).getDisplayName());
-            }
-        }
-        e.setDeathMessage(String.join(" ", words));
+
 
         // Sound effects
         if(nerd.getLives() < 1) {
-            for(Player plr : Bukkit.getOnlinePlayers()) {plr.playSound(plr, "death.final", 1, 1);}
+            for(Player plr : Bukkit.getOnlinePlayers()) {plr.playSound(plr, "death.final", 500, 1);}
             p.setRespawnLocation(p.getLocation());
             p.sendTitle(ChatColor.RED + "You are out of lives!", "", 10, 70, 20);
         }
-        else { for(Player plr : Bukkit.getOnlinePlayers()) {plr.playSound(plr, "death.nonfinal", 1, 1);} }
+        else { for(Player plr : Bukkit.getOnlinePlayers()) {plr.playSound(plr, "death.nonfinal", 500, 1);} }
     }
 }

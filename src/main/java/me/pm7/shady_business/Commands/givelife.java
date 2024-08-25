@@ -6,6 +6,7 @@ import me.pm7.shady_business.Objects.RoleType;
 import me.pm7.shady_business.ShadyBusiness;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -57,8 +58,19 @@ public class givelife implements CommandExecutor {
                         giverNerd.getData().put(RoleData.NECROMANCER_USED, true);
                         plugin.saveData();
 
-                        giverPlayer.sendMessage(ChatColor.GREEN + "You gave a life to " + args[0]);
-                        receiverPlayer.sendMessage(ChatColor.GREEN + "You received a life from " + giverPlayer.getName());
+                        giverPlayer.sendMessage(ChatColor.GOLD + "You revived " + args[0]);
+                        receiverPlayer.sendMessage(ChatColor.GOLD + "You have been revived by " + giverPlayer.getName());
+
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+
+                            // play sp00ky sounds
+                            p.playSound(p, Sound.ENTITY_WITHER_SPAWN, 500, 0.75f);
+                            p.playSound(p, Sound.ENTITY_WITHER_SPAWN, 500, 1.5f);
+
+                            if(p != giverPlayer && p != receiverPlayer) {
+                                p.sendMessage(ChatColor.GOLD + receiverPlayer.getName() + " has been revived!");
+                            }
+                        }
                     } else {
                         giverPlayer.sendMessage(ChatColor.RED + "You are either not the necromancer, or you have already revived someone");
                     }

@@ -48,17 +48,17 @@ public class Mimic implements Listener {
         }
 
         // play a funny sound
-        p.playSound(p, Sound.ENTITY_BREEZE_CHARGE, 2, 0.75f);
+        p.playSound(p, Sound.ENTITY_BREEZE_CHARGE, 500, 0.75f);
 
         used = true;
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
             used = false;
-            if (p == null) { return; }
+            if (!p.isOnline()) { return; }
 
-            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 1.0f);
-            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 1, 2.0f);
+            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 500, 1.0f);
+            p.playSound(p, Sound.ENTITY_BREEZE_SHOOT, 500, 2.0f);
 
             switch (clicked.getRole()) {
                 case MIMIC: {
@@ -123,8 +123,6 @@ public class Mimic implements Listener {
                 case VICTIM: {
                     p.sendMessage(ChatColor.GREEN + "You are now a Victim! Your goal is now to be killed by a boogeyman. If you are killed, you will gain a life instead of losing a life, and the boogeyman will not be cured.");
 
-                    nerd.getData().put(RoleData.VICTIM_COMPLETED, false);
-
                     nerd.setRole(RoleType.VICTIM);
                     break;
                 }
@@ -177,7 +175,7 @@ public class Mimic implements Listener {
                     break;
                 }
 
-                // I hate this
+                // nope creep
                 case CONDEMNED: {
                     p.sendMessage(ChatColor.RED + "That was a condemned player. I am not going to code this.");
                 }

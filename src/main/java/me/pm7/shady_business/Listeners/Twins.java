@@ -122,7 +122,7 @@ public class Twins implements Listener {
             if(secondPlayer != null && !secondPlayer.isDead()) {
                 sendHealthChangePacket(secondPlayer, damage, health);
                 if (damage >= 0) {
-                    secondPlayer.playSound(secondPlayer, Sound.ENTITY_PLAYER_HURT, 1, 1);
+                    secondPlayer.playSound(secondPlayer, Sound.ENTITY_PLAYER_HURT, 500, 1);
                     secondPlayer.playHurtAnimation(0);
                     if (damagedP.getNoDamageTicks() <= 10) {
                         secondPlayer.setNoDamageTicks(20);
@@ -134,7 +134,7 @@ public class Twins implements Listener {
             if(mimicPlayer != null && !mimicPlayer.isDead()) {
                 sendHealthChangePacket(mimicPlayer, damage, health);
                 if (damage >= 0) {
-                    mimicPlayer.playSound(mimicPlayer, Sound.ENTITY_PLAYER_HURT, 1, 1);
+                    mimicPlayer.playSound(mimicPlayer, Sound.ENTITY_PLAYER_HURT, 500, 1);
                     mimicPlayer.playHurtAnimation(0);
                     if (damagedP.getNoDamageTicks() <= 10) {
                         mimicPlayer.setNoDamageTicks(20);
@@ -147,7 +147,7 @@ public class Twins implements Listener {
             if(primePlayer != null && !primePlayer.isDead()) {
                 sendHealthChangePacket(primePlayer, damage, health);
                 if (damage >= 0) {
-                    primePlayer.playSound(primePlayer, Sound.ENTITY_PLAYER_HURT, 1, 1);
+                    primePlayer.playSound(primePlayer, Sound.ENTITY_PLAYER_HURT, 500, 1);
                     primePlayer.playHurtAnimation(0);
                     if (damagedP.getNoDamageTicks() <= 10) {
                         primePlayer.setNoDamageTicks(20);
@@ -159,7 +159,7 @@ public class Twins implements Listener {
             if(mimicPlayer != null && !mimicPlayer.isDead()) {
                 sendHealthChangePacket(mimicPlayer, damage, health);
                 if (damage >= 0) {
-                    mimicPlayer.playSound(mimicPlayer, Sound.ENTITY_PLAYER_HURT, 1, 1);
+                    mimicPlayer.playSound(mimicPlayer, Sound.ENTITY_PLAYER_HURT, 500, 1);
                     mimicPlayer.playHurtAnimation(0);
                     if (damagedP.getNoDamageTicks() <= 10) {
                         mimicPlayer.setNoDamageTicks(20);
@@ -172,7 +172,7 @@ public class Twins implements Listener {
             if(secondPlayer != null && !secondPlayer.isDead()) {
                 sendHealthChangePacket(secondPlayer, damage, health);
                 if (damage >= 0) {
-                    secondPlayer.playSound(secondPlayer, Sound.ENTITY_PLAYER_HURT, 1, 1);
+                    secondPlayer.playSound(secondPlayer, Sound.ENTITY_PLAYER_HURT, 500, 1);
                     secondPlayer.playHurtAnimation(0);
                     if (damagedP.getNoDamageTicks() <= 10) {
                         secondPlayer.setNoDamageTicks(20);
@@ -184,7 +184,7 @@ public class Twins implements Listener {
             if(primePlayer != null && !primePlayer.isDead()) {
                 sendHealthChangePacket(primePlayer, damage, health);
                 if (damage >= 0) {
-                    primePlayer.playSound(primePlayer, Sound.ENTITY_PLAYER_HURT, 1, 1);
+                    primePlayer.playSound(primePlayer, Sound.ENTITY_PLAYER_HURT, 500, 1);
                     primePlayer.playHurtAnimation(0);
                     if (damagedP.getNoDamageTicks() <= 10) {
                         primePlayer.setNoDamageTicks(20);

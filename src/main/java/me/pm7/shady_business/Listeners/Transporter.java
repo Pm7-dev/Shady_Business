@@ -36,13 +36,13 @@ public class Transporter implements Listener {
         if(data.get(RoleData.TRANSPORTER_SELECTED_PLAYER) == null) {
             data.put(RoleData.TRANSPORTER_SELECTED_PLAYER, clicked.getName());
 
-            p.playSound(p, Sound.BLOCK_BAMBOO_WOOD_BUTTON_CLICK_ON, 2, 2);
+            p.playSound(p, Sound.BLOCK_BAMBOO_WOOD_BUTTON_CLICK_ON, 500, 2);
             p.sendMessage(ChatColor.AQUA + "Selected " + clicked.getName());
         } else {
             if(data.get(RoleData.TRANSPORTER_SELECTED_PLAYER) == clicked.getName()) {
                 data.put(RoleData.TRANSPORTER_SELECTED_PLAYER, null);
 
-                p.playSound(p, Sound.BLOCK_BAMBOO_WOOD_BUTTON_CLICK_OFF, 2, 2);
+                p.playSound(p, Sound.BLOCK_BAMBOO_WOOD_BUTTON_CLICK_OFF, 500, 2);
                 p.sendMessage(ChatColor.AQUA + "Deselected " + clicked.getName());
             } else {
                 Player saved = Bukkit.getPlayer((String) data.get(RoleData.TRANSPORTER_SELECTED_PLAYER));
@@ -50,7 +50,7 @@ public class Transporter implements Listener {
                     p.sendMessage(ChatColor.AQUA + (String) data.get(RoleData.TRANSPORTER_SELECTED_PLAYER) + " is offline, and will be replaced with this player.");
                     data.put(RoleData.TRANSPORTER_SELECTED_PLAYER, clicked.getName());
 
-                    p.playSound(p, Sound.BLOCK_BAMBOO_WOOD_BUTTON_CLICK_ON, 2, 2);
+                    p.playSound(p, Sound.BLOCK_BAMBOO_WOOD_BUTTON_CLICK_ON, 500, 2);
                     p.sendMessage(ChatColor.AQUA + "Selected " + clicked.getName());
                     return;
                 }
@@ -65,8 +65,8 @@ public class Transporter implements Listener {
                 saved.sendMessage(ChatColor.AQUA + "Whoosh!");
                 pClicked.sendMessage(ChatColor.AQUA + "Whoosh!");
 
-                saved.getWorld().playSound(saved, Sound.ENTITY_BREEZE_LAND, 2, 0.9f);
-                pClicked.getWorld().playSound(pClicked, Sound.ENTITY_BREEZE_LAND, 2, 0.9f);
+                saved.getWorld().playSound(saved, Sound.ENTITY_BREEZE_LAND, 500, 0.9f);
+                pClicked.getWorld().playSound(pClicked, Sound.ENTITY_BREEZE_LAND, 500, 0.9f);
 
                 saved.getWorld().spawnParticle(Particle.GUST_EMITTER_SMALL, saved.getLocation(), 1);
                 pClicked.getWorld().spawnParticle(Particle.GUST_EMITTER_SMALL, pClicked.getLocation(), 1);
