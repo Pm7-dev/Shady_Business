@@ -43,7 +43,7 @@ public class startsession implements CommandExecutor {
                         nerd.setName(p.getName());
                         nerd.setLives(4);
                         nerd.setHadRoleLastSession(false);
-                        nerd.setRole(RoleType.NONE);
+                        nerd.setRole(RoleType.VILLAGER);
 
                         HashMap<RoleData, Object> data = new HashMap<>();
                         data.put(RoleData.VOTED, false);
@@ -347,11 +347,15 @@ public class startsession implements CommandExecutor {
 
 
                     }, 100L); //100 for 5 seconds
-                }, 20L); //600 for 30 seconds
-            }, 60L); //6000 for 5 minutes
+                }, 600L); //600 for 30 seconds
+            }, 6000L); //6000 for 5 minutes
 
         // surely he's gonna do it.
         } else if(commandSender.getName().equals("Piffin380")) {
+            commandSender.sendMessage(ChatColor.RED + "later.");
+
+
+            /* TODO: REMOVE COMMENTS. TESTING ONLY
             if(!cooldown) {
                 cooldown = true;
 
@@ -367,6 +371,8 @@ public class startsession implements CommandExecutor {
             } else {
                 commandSender.sendMessage(ChatColor.RED + "later.");
             }
+
+             */
         }
         return true;
     }

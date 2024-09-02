@@ -1,5 +1,6 @@
 package me.pm7.shady_business;
 
+import me.pm7.shady_business.Additionals.*;
 import me.pm7.shady_business.Commands.*;
 import me.pm7.shady_business.Listeners.*;
 import me.pm7.shady_business.Objects.Nerd;
@@ -10,6 +11,8 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+
+import static me.pm7.shady_business.Additionals.CustomRecipes.setupCustomRecipes;
 
 public final class ShadyBusiness extends JavaPlugin {
     private static ShadyBusiness plugin;
@@ -38,9 +41,13 @@ public final class ShadyBusiness extends JavaPlugin {
         // organization
         getServer().getPluginManager().registerEvents(new ProximityTextChat(), this);
         getServer().getPluginManager().registerEvents(new ScoreboardManager(), this);
+        getServer().getPluginManager().registerEvents(new EnchantLimiter(), this);
         getServer().getPluginManager().registerEvents(new DeathListener(), this);
+        getServer().getPluginManager().registerEvents(new PotionLimiter(), this);
+        getServer().getPluginManager().registerEvents(new TrimSelector(), this);
         getServer().getPluginManager().registerEvents(new JoinListener(), this);
         getServer().getPluginManager().registerEvents(new Investigator(), this);
+        getServer().getPluginManager().registerEvents(new MaceLimiter(), this);
         getServer().getPluginManager().registerEvents(new Transporter(), this);
         getServer().getPluginManager().registerEvents(new Twins(), this);
         getServer().getPluginManager().registerEvents(new Mimic(), this);
@@ -54,6 +61,8 @@ public final class ShadyBusiness extends JavaPlugin {
         this.getCommand("info").setExecutor(new info());
         this.getCommand("test").setExecutor(new test());
         this.getCommand("cure").setExecutor(new cure());
+
+        setupCustomRecipes();
 
         System.out.println(":3 wistenyews and commands wegistewed >w<");
     }

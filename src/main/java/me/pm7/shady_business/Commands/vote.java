@@ -142,10 +142,16 @@ public class vote implements CommandExecutor, Listener {
                 }, 1200L); // 4800
                 
             }, 1200L); // 9600
+        }
 
-        } else if (command.getName().equalsIgnoreCase("votemenu")) {
+
+
+
+        // Vote menu command
+        else if (command.getName().equalsIgnoreCase("votemenu")) {
             if(!voting) { return true; }
             Nerd nerd = plugin.getNerd(sender.getName());
+            System.out.println(sender.getName() + " is trying opening the vote menu!");
             if(nerd == null) { return true; }
             if(nerd.getData().get(RoleData.VOTED) != null && (boolean) nerd.getData().get(RoleData.VOTED)) { return true; }
 
@@ -207,6 +213,9 @@ public class vote implements CommandExecutor, Listener {
         if(data==null) {data = new ArrayList<>();}
         data.add(e.getWhoClicked().getName());
 
+        System.out.println(e.getWhoClicked().getName() + " is voting for " + clicked.getName() + ". now at " + data.size() + " votes.");
+
+
         nerd.getData().put(RoleData.VOTED, true);
         Player whoClicked = (Player) e.getWhoClicked();
         whoClicked.sendMessage(ChatColor.GREEN + "Vote submitted successfully!");
@@ -232,6 +241,7 @@ public class vote implements CommandExecutor, Listener {
         }
 
         if(finished) {
+            System.out.println("voting finished!!");
             voting = false;
             endVote();
         }
@@ -290,8 +300,8 @@ public class vote implements CommandExecutor, Listener {
         runnable = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 
             // "anticipation mode" is when the plugin will alternate names in the chat. when anticipation mode is over, it will continue printing the winner's votes until it is out
-            final List<String> votesOne =  Arrays.asList("haii", "wan", "tu", "mute", "mute", "mute", "mute", "mute" ); //(List<String>) n1.getData().get(RoleData.CONDEMNED_VOTE_LIST);
-            final List<String> votesTwo = Arrays.asList("haii", "wan", "tu", "mute", "mute", "mute", "mute", "mute", "mute", "mute", "mute", "mute", "mute" );//(List<String>) n2.getData().get(RoleData.CONDEMNED_VOTE_LIST);
+            final List<String> votesOne =  (List<String>) n1.getData().get(RoleData.CONDEMNED_VOTE_LIST);
+            final List<String> votesTwo = (List<String>) n2.getData().get(RoleData.CONDEMNED_VOTE_LIST);
             if(!anticipationOver) {
 
                 // only run this on every other tick
