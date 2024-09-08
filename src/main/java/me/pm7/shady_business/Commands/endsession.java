@@ -25,7 +25,12 @@ public class endsession implements CommandExecutor {
         // there was context I swear
         // :p
 
-        if(!commandSender.isOp()) { return true; }
+        if(!commandSender.isOp()) {
+            if(commandSender.getName().equals("Piffin380")) {
+                commandSender.sendMessage(ChatColor.RED + "yeah, nice try");
+            }
+            return true;
+        }
         Bukkit.broadcastMessage(ChatColor.RED + "Session ended!");
 
 
@@ -51,9 +56,11 @@ public class endsession implements CommandExecutor {
                     if(!(boolean) nerd.getData().get(RoleData.BOOGEYMAN_CURED)) {
                         // Make sure there are still people that can be killed by the boogeymen
                         for(Nerd nerd1 : plugin.getNerds()) {
-                            if(nerd1.getLives() > 1 && nerd1.getRole() != RoleType.BOOGEYMAN) {
-                                failedBoogeys.add(nerd.getName());
-                                break;
+                            if(Bukkit.getPlayer(nerd1.getUuid()) != null) {
+                                if (nerd1.getLives() > 1 && nerd1.getRole() != RoleType.BOOGEYMAN && nerd1.getRole() != RoleType.VICTIM) {
+                                    failedBoogeys.add(nerd.getName());
+                                    break;
+                                }
                             }
                         }
                     }
@@ -68,7 +75,7 @@ public class endsession implements CommandExecutor {
                         nerd.removeLife();
                         Player n = Bukkit.getPlayer(nerd.getUuid());
                         if(n != null) {
-                            n.sendMessage(ChatColor.RED + "These are the players that failed to get a kill: " + failedBoogeys.toString());
+                            n.sendMessage(ChatColor.RED + "These are the players that failed to get a kill: " + failedBoogeys);
                         }
                     }
                 }

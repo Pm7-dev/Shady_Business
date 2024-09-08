@@ -73,14 +73,16 @@ public class DeathListener implements Listener {
 
                 if (killer.getRole() == RoleType.BOOGEYMAN && killer.getLives() > 1 && nerd.getLives() > 1) {
                     if (nerd.getRole() == RoleType.VICTIM) {
-                        pk.sendTitle(ChatColor.RED + "You've been tricked!", "", 10, 70, 20);
-                        pk.sendMessage(ChatColor.RED + "The player you killed was a victim");
-                        nerd.addLife();
-                        p.sendTitle(ChatColor.GREEN + "You gained a life!", "", 10, 70, 20);
+                        if(!((Boolean) nerd.getData().get(RoleData.VICTIM_COMPLETED))) {
+                            pk.sendTitle(ChatColor.RED + "You've been tricked!", "", 10, 70, 20);
+                            pk.sendMessage(ChatColor.RED + "The player you killed was a victim");
+                            nerd.addLife();
+                            p.sendTitle(ChatColor.GREEN + "You gained a life!", "", 10, 70, 20);
 
-                        nerd.setRole(RoleType.VILLAGER);
+                            nerd.getData().put(RoleData.VICTIM_COMPLETED, true);
 
-                        victimthing = true;
+                            victimthing = true;
+                        }
 
                     } else if (nerd.getRole() != RoleType.BOOGEYMAN &&  !((boolean) killerData.get(RoleData.BOOGEYMAN_CURED))) {
                         pk.sendTitle(ChatColor.GREEN + "You have been cured!", "", 10, 70, 20);

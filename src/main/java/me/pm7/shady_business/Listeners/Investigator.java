@@ -82,7 +82,7 @@ public class Investigator implements Listener {
                 if (nerd.getRole() == RoleType.BOOGEYMAN) {
                     p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "■ Boogeyman! ■");
                 } else {
-                    p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "■ Not A Boogeyman! ■");
+                    p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "■ Not a Boogeyman! ■");
                 }
             }, random.nextInt(8) + 2);
         }

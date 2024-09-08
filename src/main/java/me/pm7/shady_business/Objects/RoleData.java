@@ -12,7 +12,7 @@ public enum RoleData {
     TRANSPORTER_TELEPORTS_LEFT,   //   integer     -    amount of times the transporter can still use their power
     TRANSPORTER_SELECTED_PLAYER,  //   string      -    the name of the player that the transporter has selected
     CONDEMNED_VOTE_LIST,          //   string list -    the names of the nerds who voted for this Condemned instance
-
+    VICTIM_COMPLETED,             //   boolean     -    if the victim has been killed by a boogeyman
     VOTED                         //   boolean     -    if the nerd has voted in the Condemned vote yet (exists for all roles)
 }
 

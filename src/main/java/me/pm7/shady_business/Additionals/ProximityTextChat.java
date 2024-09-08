@@ -22,8 +22,8 @@ public class ProximityTextChat implements Listener {
 
     List<Character> vowels = Arrays.asList('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U');
     List<Character> numbers = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-    int fadeDist = config.getInt("textChatFade");
-    int cutDist = config.getInt("textChatCut");
+    int fadeDist = 50;//config.getInt("textChatFade");
+    int cutDist = 65;//config.getInt("textChatCut");
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) {
@@ -45,40 +45,45 @@ public class ProximityTextChat implements Listener {
         Double sY = senderLocation.getY();
         Double sZ = senderLocation.getZ();
 
+        message = message.substring(1);
+        p.sendMessage("<" + p.getDisplayName() + "> " + message);
+
         for(Player receiver : Bukkit.getOnlinePlayers()) {
-            message = message.substring(1);
+            if(receiver == p) {continue;}
+
+            String newMsg = message;
 
             Location receiverLocation = receiver.getLocation();
             Double rX = receiverLocation.getX();
             Double rY = receiverLocation.getY();
             Double rZ = receiverLocation.getZ();
 
-            //Math for finding the distance between two objects in a 3D space
-            double distance = Math.abs(Math.sqrt(Math.pow(sX-rX, 2) + Math.pow(sY-rY, 2) + Math.pow(sZ-rZ, 2)));
+            //finding the distance between two objects in a 3D space
+            double distance = Math.abs(Math.sqrt(Math.pow(sX-rX, 2) + Math.pow(sY-rY, 2)/2 + Math.pow(sZ-rZ, 2)));
 
             if (distance > cutDist) {continue;}
-            if (distance > fadeDist) {message = obfuscateMessage(message, ((distance - fadeDist) / (cutDist - fadeDist)) * 100);}
+            if (distance > fadeDist) {newMsg = obfuscateMessage(message, ((distance - fadeDist) / (cutDist - fadeDist)) * 100);}
 
-            receiver.sendMessage("<" + p.getDisplayName() + "> " + message);
+            receiver.sendMessage("<" + p.getDisplayName() + "> " + newMsg);
         }
     }
 
     String obfuscateMessage(String message, Double power) {
 
-        // Cut out select words
-        String newMsg = "";
+        // Cut out random words
+        StringBuilder newMsg = new StringBuilder();
         String[] words = message.split(" ");
         for(String word : words) {
             if ((Math.random() * ((100) + 1)) < (power/4)) {
-                newMsg += "...";
+                newMsg.append("...");
             } else {
-                newMsg += word;
+                newMsg.append(word);
             }
-            newMsg += " ";
+            newMsg.append(" ");
         }
 
-        // Obfuscator
-        String obfuscatedMessage = "";
+        // Change the vowels
+        StringBuilder obfuscatedMessage = new StringBuilder();
         for (int i = 0; i < newMsg.length(); i++) {
 
             // Obfuscate vowels
@@ -93,17 +98,17 @@ public class ProximityTextChat implements Listener {
                 if(Character.isUpperCase(newMsg.charAt(i))) {
                     charToAdd = toUpperCase(charToAdd);
                 }
-                obfuscatedMessage += charToAdd;
+                obfuscatedMessage.append(charToAdd);
             } else
 
                 // Obfuscate numbers
                 if(numbers.contains(newMsg.charAt(i)) && (Math.random() * ((100) + 1)) < (power)) {
                     char charToAdd = numbers.get((int) Math.floor(Math.random() * ((10))));
-                    obfuscatedMessage += charToAdd;
+                    obfuscatedMessage.append(charToAdd);
                 } else {
-                    obfuscatedMessage += newMsg.charAt(i);
+                    obfuscatedMessage.append(newMsg.charAt(i));
                 }
         }
-        return obfuscatedMessage;
+        return obfuscatedMessage.toString();
     }
 }

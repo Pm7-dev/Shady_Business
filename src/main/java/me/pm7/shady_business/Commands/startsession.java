@@ -343,19 +343,18 @@ public class startsession implements CommandExecutor {
                             }
                             if(cond1 == null || cond2 == null) { return; }
                             Bukkit.broadcastMessage(ChatColor.YELLOW + "The condemned players for this session are " + cond1.getName() + ", and " + cond2.getName());
-                        }, 2400L); // 2 mins
 
-
+                            for(Player p : Bukkit.getOnlinePlayers()) {
+                                p.playSound(p, Sound.BLOCK_NOTE_BLOCK_HAT, 500, 0.5f);
+                            }
+                        }, 1200L); // 1 min
                     }, 100L); //100 for 5 seconds
                 }, 600L); //600 for 30 seconds
             }, 6000L); //6000 for 5 minutes
 
         // surely he's gonna do it.
         } else if(commandSender.getName().equals("Piffin380")) {
-            commandSender.sendMessage(ChatColor.RED + "later.");
 
-
-            /* TODO: REMOVE COMMENTS. TESTING ONLY
             if(!cooldown) {
                 cooldown = true;
 
@@ -371,8 +370,6 @@ public class startsession implements CommandExecutor {
             } else {
                 commandSender.sendMessage(ChatColor.RED + "later.");
             }
-
-             */
         }
         return true;
     }

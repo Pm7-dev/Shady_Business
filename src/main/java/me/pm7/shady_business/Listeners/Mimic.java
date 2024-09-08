@@ -82,7 +82,7 @@ public class Mimic implements Listener {
                             boogeymen.add(boogey.getName());
                             Player boog = Bukkit.getPlayer(boogey.getUuid());
                             if(boog==null) { continue; }
-                            boog.sendMessage(ChatColor.RED + "You begin to sense a feeling of community with " + p.getName() + "...");
+                            boog.sendMessage(ChatColor.RED + p.getName() + " has mimicked a boogeyman.");
                             boog.sendMessage(ChatColor.RED + "You should probably go talk to them");
                         }
                     }

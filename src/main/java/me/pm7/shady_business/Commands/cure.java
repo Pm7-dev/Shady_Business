@@ -55,6 +55,8 @@ public class cure implements CommandExecutor {
 
         // surely there are no other stupidity cases to handle
 
+        p.sendTitle(ChatColor.GREEN + "You have been cured!", "", 10, 70, 20);
+
         data.put(RoleData.BOOGEYMAN_CURED, true);
         for(Player b : Bukkit.getOnlinePlayers()) { // b for... boogeyman, I guess
             Nerd nb = plugin.getNerd(b.getUniqueId()); // insert some nonbinary pun I'm not clever enough for here

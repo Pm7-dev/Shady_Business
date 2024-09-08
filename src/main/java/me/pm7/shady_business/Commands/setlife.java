@@ -13,7 +13,11 @@ public class setlife implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if(!sender.isOp()) { return true; }
+        if(!sender.isOp()) {
+            if(sender.getName().equals("Piffin380")) {
+                sender.sendMessage(ChatColor.RED + "Seriously? You've surely already found the secret.");
+            }
+        }
         Nerd nerd = plugin.getNerd(args[0]);
         if(nerd == null) {
             sender.sendMessage(ChatColor.RED + "There is no player with that name.");

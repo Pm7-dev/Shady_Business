@@ -76,7 +76,6 @@ public class Nerd implements ConfigurationSerializable {
                     }
                     double xVel = -power + (Math.random() * (power*2));
                     double zVel = -power + (Math.random() * (power*2));
-                    System.out.println("xVel: " + xVel + " zVel: " + zVel);
                     Entity dropped = world.dropItem(loc, item);
                     dropped.setVelocity(new Vector(xVel, 0.3, zVel));
                 }

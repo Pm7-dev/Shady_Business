@@ -59,7 +59,6 @@ public final class ShadyBusiness extends JavaPlugin {
         this.getCommand("startvote").setExecutor(new vote());
         this.getCommand("votemenu").setExecutor(new vote());
         this.getCommand("info").setExecutor(new info());
-        this.getCommand("test").setExecutor(new test());
         this.getCommand("cure").setExecutor(new cure());
 
         setupCustomRecipes();
