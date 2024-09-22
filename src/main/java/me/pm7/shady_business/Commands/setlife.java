@@ -17,6 +17,7 @@ public class setlife implements CommandExecutor {
             if(sender.getName().equals("Piffin380")) {
                 sender.sendMessage(ChatColor.RED + "Seriously? You've surely already found the secret.");
             }
+            return true;
         }
         Nerd nerd = plugin.getNerd(args[0]);
         if(nerd == null) {

@@ -416,7 +416,7 @@ public class vote implements CommandExecutor, Listener {
                     nerd.removeLife();
                 } else {
                     exploding = true;
-                    p.getWorld().createExplosion(p.getLocation(), 5, false);
+                    p.getWorld().createExplosion(p.getLocation(), 3 + plugin.getConfig().getInt("sessions"), false);
                     p.damage(999999.9d); // surely nobody will survive this
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> exploding = false, 5L);
@@ -454,7 +454,7 @@ public class vote implements CommandExecutor, Listener {
                             selected.removeLife();
                         } else {
                             exploding = true;
-                            p.getWorld().createExplosion(p.getLocation(), 5, false);
+                            p.getWorld().createExplosion(p.getLocation(), 3 + plugin.getConfig().getInt("sessions"), false);
                             p.damage(999999.9d); // surely nobody will survive this
 
                             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> exploding = false, 5L);

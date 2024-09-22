@@ -86,6 +86,8 @@ public class Nerd implements ConfigurationSerializable {
             p.setGameMode(GameMode.SPECTATOR);
             p.sendTitle(ChatColor.RED + "You are out of lives!", "", 10, 70, 20);
 
+            world.strikeLightningEffect(loc);
+
             config.set("someoneDeadLol", true);
         }
     }
