@@ -34,6 +34,7 @@ public class Mimic implements Listener {
         if(!(e.getRightClicked() instanceof Player pClicked)) { return; }
         Player p = e.getPlayer();
         if(!p.isSneaking()) { return; }
+        if(!p.getInventory().getItemInMainHand().getType().isAir()) { return; }
         Nerd nerd = plugin.getNerd(p.getName());
         if(nerd == null) { return; }
         if(nerd.getRole() != RoleType.MIMIC) { return; }

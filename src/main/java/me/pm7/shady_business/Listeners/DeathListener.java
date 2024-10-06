@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -73,7 +72,7 @@ public class DeathListener implements Listener {
 
                 if (killer.getRole() == RoleType.BOOGEYMAN && killer.getLives() > 1 && nerd.getLives() > 1) {
                     if (nerd.getRole() == RoleType.VICTIM) {
-                        if(!((Boolean) nerd.getData().get(RoleData.VICTIM_COMPLETED))) {
+                        if(!((boolean) nerd.getData().get(RoleData.VICTIM_COMPLETED))) {
                             pk.sendTitle(ChatColor.RED + "You've been tricked!", "", 10, 70, 20);
                             pk.sendMessage(ChatColor.RED + "The player you killed was a victim");
                             nerd.addLife();

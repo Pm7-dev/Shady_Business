@@ -124,7 +124,7 @@ public class startsession implements CommandExecutor {
 
                     // Stupidest possible way of making either two or three boogeymen
                     boolean boogeyExists = false;
-                    if(new HashSet<>(roleSelectable).size() > 3) {
+                    if(new HashSet<>(roleSelectable).size() > 4) {
                         boogeyExists = true;
                         for (int i = 0; i < rand.nextInt(2) + 2; i++) { addRole(RoleType.BOOGEYMAN, roleSelectable); }
                     }
@@ -267,6 +267,8 @@ public class startsession implements CommandExecutor {
                                 case VICTIM: {
                                     p.sendTitle(ChatColor.GREEN + "Victim", "", 10, 70, 20);
                                     p.sendMessage(ChatColor.GREEN + "You are the Victim! Your goal is to get killed by a boogeyman. If you are killed, you will gain a life instead of losing a life, and the boogeyman will not be cured.");
+
+                                    nerd.getData().put(RoleData.VICTIM_COMPLETED, false);
                                     break;
                                 }
                                 case MIMIC: {

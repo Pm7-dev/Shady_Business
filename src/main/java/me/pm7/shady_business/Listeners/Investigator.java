@@ -40,6 +40,10 @@ import java.util.Random;
 
     I think I got it fixed at some point but now I don't remember and am worried (8/18/24)
 
+
+    soooo uhhhhh... I borked it :c (9/30/24)
+
+    fixed it on the day of the session :3 (10/6/24)
  */
 
 
@@ -114,6 +118,8 @@ public class Investigator implements Listener {
         meta.addCustomEffect(new PotionEffect(PotionEffectType.LUCK, PotionEffect.INFINITE_DURATION, 1, true, false, false), true);
         ponderingOrb.setItemMeta(meta);
         inv.addItem(ponderingOrb);
+
+        nerd.getData().put(RoleData.INVESTIGATOR_NEEDS_POTION, false);
     }
 
     @EventHandler
