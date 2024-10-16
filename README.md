@@ -1,5 +1,5 @@
 # Shady Business
-If you are visiting this page, you likely have already seen the YouTube series, which explains how this game works. If you don't care about all the specific details, go to the [**Installation and Important Info**](#installation-and-important-info) section to learn how to set this up. Anyway, I will now explain the inner workings of this plugin in excruciating detail.  
+If you are visiting this page, you likely have already seen the YouTube series, which explains how this game works. So if you don't care about all the specific details, go to the [**Installation and Important Info**](#installation-and-important-info) section to learn how to set this up. Anyway, I will now explain the inner workings of this plugin in excruciating detail because it wouldn't feel right not having this giant amount of information somewhere.
 
 First listing some basic info that doesn’t really fit anywhere
 - Players start with 4 lives
@@ -10,7 +10,7 @@ First listing some basic info that doesn’t really fit anywhere
 - - 2 lives: Yellow
 - - 1 life: Red
 - When you are not red, you play the game as normal and are not allowed to incite attacks
-- When you are red, you must abandon your team and are now tasked with killing any remaining player
+- When you are red, you **must abandon your team** and are now tasked with killing any remaining player
 - You will have to trust your players to not give away their lives before the role reveal
 - Ghost players will not be able to use chat
 - Keep inventory will be enabled
@@ -18,8 +18,8 @@ First listing some basic info that doesn’t really fit anywhere
 - Boogeyman kills do not show up in chat  
 
 The game centers around the idea of giving players special roles at the start of a session. Not every player will have a special role, and will be given the role "Villager." Players with the Villager role will have a larger chance of getting a role in the next session. Role descriptions and specifics will be announced to each player according to their role. Some special roles will have an objective to complete, while others have an ability. Players are for the most part allowed to tell others what role they are. However, you are not allowed to make a plan with a boogeyman as a victim to get a life. There are zero roles that persist on red, although (outside of twins) the roles will come back if you are given a life.
-  
-Here are a list of roles in the order of priority (If there are not enough players to fill all the roles, the roles at the top of the list will take priority)  
+# Boring list explaining all the role stuff
+This is a list of roles in the order of selection priority (If there are not enough players to fill all the roles, the roles at the top of the list will take priority)  
 - **The Boogeyman**  
 As long as there are 5 or more players that are past one life, There will be either two or three boogeymen each session, with a 50% chance of either number. Each boogeyman is alerted as to who the other boogeymen are, and **every boogeyman** has to get a kill before the session ends, or **all** boogeymen lose one life. Boogeymen are encouraged work together to accomplish the goal. If a boogeyman turns red, they will be exempt from boogeyman duties, and will not need to get a kill to ensure the other boogeymen do not lose a life. Of course, if they are given a life back, they rejoin the boogeymen. A red player that was previously a boogey is not allowed to tell the other people who the boogeymen are.
 - **The Necromancer**
@@ -36,14 +36,6 @@ This player is able to copy another player’s role once by **crouch + right cli
 Two players are selected to be twins at the start of the session, and they will not be told who the other twin is. These two players will have a maximum of 15 hearts, and will be set to that health at the start of the session. These players will have their health and deaths synced for the entire session. These two players will not be allowed to eat golden apples for the session, because that would break the health link. If either of these two players becomes red, the link will be broken, as roles cannot be maintained on red players. Twins cannot give or receive lives because I am lazy and don't want to deal with reestablishing the health link.
 - **The Transporter**
 This player can **crouch + right click a player with an empty hand** to select them for teleportation. Selecting the same player again will deselect that player, but selecting a different player will swap their place with the already selected player. This can be used 2 times per session, and is NOT allowed to be used maliciously.
-
-
-
-
-
-
-
-
 
 # Installation and Important Info
 If you are here because you want to download the plugin and play it with your friend group, here's how you can do it.
@@ -71,6 +63,6 @@ If you are here because you want to download the plugin and play it with your fr
 14. If you find a bug or desire a change in the plugin, feel free to [**make an issue**](https://github.com/Pm7-dev/Shady_Business/issues) and I might get around to it. Please do understand that this plugin was created for the series, and any edits done after it is finished will only be made if I happen to have time.
 
 # Credits
-_Pm7 for writing all the code
-Piffin380 for creating the central idea, inspired from Ultimate Werewolf  
-All the Cheap Life members for contributing towards making a great season (presumably. This credit was written before the season started :3)
+- _Pm7 for writing all the code  
+- Piffin380 for creating the central idea, inspired from Ultimate Werewolf  
+- All the Cheap Life members for contributing towards making a great season (presumably. This credit was written before the season started :3)

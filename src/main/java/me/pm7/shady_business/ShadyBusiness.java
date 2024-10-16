@@ -11,6 +11,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.logging.Level;
 
 import static me.pm7.shady_business.Additionals.CustomRecipes.setupCustomRecipes;
 
@@ -20,7 +21,7 @@ public final class ShadyBusiness extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        System.out.println("Maybe the real shade was the businesses we made along the way...");
+        getLogger().log (Level.INFO,"Maybe the real shade was the businesses we made along the way...");
 
         plugin = this;
 
@@ -63,7 +64,8 @@ public final class ShadyBusiness extends JavaPlugin {
 
         setupCustomRecipes();
 
-        System.out.println(":3 wistenyews and commands wegistewed >w<");
+        getLogger().log (Level.INFO,":3 wistenyews and commands wegistewed >w<");
+
     }
 
     private void loadConfigData() {
@@ -82,7 +84,8 @@ public final class ShadyBusiness extends JavaPlugin {
             nerdList.add(nerd);
         }
 
-        System.out.println("OwO~ configuwation data woaded");
+        getLogger().log(Level.INFO, "OwO~ configuwation data woaded");
+
     }
 
     @Override
@@ -111,7 +114,6 @@ public final class ShadyBusiness extends JavaPlugin {
     private List<Nerd> nerdList = new ArrayList<>();
     public List<Nerd> getNerds() {return nerdList;}
     public void saveData() {
-        System.out.println("Saving plugin data");
         ConfigurationSection nerdsSection = config.createSection("nerds");
         for (Nerd nerd : nerdList) {
             ConfigurationSection nerdSection = nerdsSection.createSection(nerd.getName());

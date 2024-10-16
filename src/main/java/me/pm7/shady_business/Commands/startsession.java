@@ -57,11 +57,20 @@ public class startsession implements CommandExecutor {
 
                 // Actually make sure to set the data for the nether lol
                 World world = Bukkit.getWorld("world");
+                if(world == null) {
+                    commandSender.sendMessage(ChatColor.YELLOW + "World with name 'world' not found, using current sender world");
+                    if(!(commandSender instanceof Player)) {
+                        commandSender.sendMessage(ChatColor.RED + "Cannot be run from console in this state, run command as player in the main server world you are using.");
+                        return true;
+                    }
+
+                    world = ((Player) commandSender).getWorld();
+                }
                 world.setDifficulty(Difficulty.HARD);
                 world.setGameRule(GameRule.DO_INSOMNIA, false);
                 world.setGameRule(GameRule.KEEP_INVENTORY, true);
 
-                World nether = Bukkit.getWorld("world_nether");
+                World nether = Bukkit.getWorld(world.getName() + "_nether");
                 nether.setDifficulty(Difficulty.HARD);
                 nether.setGameRule(GameRule.DO_INSOMNIA, false);
                 nether.setGameRule(GameRule.KEEP_INVENTORY, true);
