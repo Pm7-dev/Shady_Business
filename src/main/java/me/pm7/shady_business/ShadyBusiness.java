@@ -64,7 +64,7 @@ public final class ShadyBusiness extends JavaPlugin {
 
         setupCustomRecipes();
 
-        getLogger().log (Level.INFO,":3 wistenyews and commands wegistewed >w<");
+        getLogger().log (Level.INFO,"Registered listeners and commands");
 
     }
 
@@ -84,7 +84,7 @@ public final class ShadyBusiness extends JavaPlugin {
             nerdList.add(nerd);
         }
 
-        getLogger().log(Level.INFO, "OwO~ configuwation data woaded");
+        getLogger().log(Level.INFO, "Loaded configuration data");
 
     }
 
@@ -111,8 +111,9 @@ public final class ShadyBusiness extends JavaPlugin {
         return null;
     }
 
-    private List<Nerd> nerdList = new ArrayList<>();
+    private final List<Nerd> nerdList = new ArrayList<>();
     public List<Nerd> getNerds() {return nerdList;}
+
     public void saveData() {
         ConfigurationSection nerdsSection = config.createSection("nerds");
         for (Nerd nerd : nerdList) {
