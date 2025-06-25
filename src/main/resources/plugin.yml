@@ -4,27 +4,27 @@ main: me.pm7.shady_business.ShadyBusiness
 api-version: '1.21'
 commands:
   startsession:
-    description: "UwU~"
+    description: "Starts the session and gives roles after a few minutes"
     usage: /<command>
   endsession:
-    description: "OwO what's this?"
+    description: "Stops the session, dealing with failed roles"
   givelife:
-    description: "^w^"
-    usage: /<command>
+    description: "Gives a life to a player"
+    usage: /<command> <player>
   cure:
-    description: "nya :3"
+    description: "manually cure a boogeyman if they get a kill that isn't credited"
     usage: /<command>
   startvote:
-    description: ">//w//<"
+    description: "Begins the condemned vote"
     usage: /<command>
   info:
-    description: "qwq"
+    description: "gets info about your current role"
     usage: /<command>
   votemenu:
-    description: "Piffin is the only person that has to use this command"
+    description: "not necessary to run, this is the command that clicking the chat thingy does"
     usage: /<command>
   setlife:
-    description: "bwomp"
+    description: "sets the life count of a specific player"
     usage: /<command> <player> <integer>
   test:
     description: "o3o"
